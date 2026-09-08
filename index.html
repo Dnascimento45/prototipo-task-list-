@@ -1,0 +1,940 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Caderno Digital - Com Divisórias de Foco</title>
+    <style>
+        :root {
+            --bg-color: #0d1117;
+            --card-bg: #161b22;
+            --text-main: #f0f6fc;
+            --text-muted: #8b949e;
+            --border-color: #30363d;
+            --primary: #388bfd;
+            --primary-hover: #1f6feb;
+            --success-bg: rgba(46, 160, 67, 0.15);
+            --success-border: #2ea043;
+            --success-text: #3fb950;
+            --pending-bg: rgba(187, 128, 9, 0.15);
+            --pending-border: #bb8009;
+            --pending-text: #e3b341;
+            --danger: #f85149;
+            --danger-hover: #da3633;
+            --secao-bg: #21262d;
+            --secao-border: #484f58;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            margin: 0;
+            padding: 30px;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        header {
+            margin-bottom: 25px;
+            text-align: center;
+        }
+
+        header h1 {
+            color: var(--text-main);
+            margin-bottom: 5px;
+            font-size: 26px;
+        }
+
+        header p {
+            color: var(--text-muted);
+            font-size: 14px;
+            margin: 0;
+        }
+
+        .sync-bar {
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .btn-sync {
+            background-color: var(--card-bg);
+            color: var(--text-main);
+            border: 1px solid var(--border-color);
+            padding: 8px 14px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: 600;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .btn-sync:hover {
+            border-color: var(--primary);
+            background-color: #1f242c;
+        }
+
+        .card-adicionar {
+            background: var(--card-bg);
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.2);
+            padding: 20px;
+            margin-bottom: 25px;
+            border: 1px solid var(--border-color);
+        }
+
+        .card-adicionar h3 {
+            margin-top: 0;
+            margin-bottom: 15px;
+            font-size: 16px;
+            color: var(--text-main);
+        }
+
+        .form-group {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+
+        .form-group input, .form-group select {
+            padding: 10px 14px;
+            background-color: #0d1117;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            color: var(--text-main);
+            font-size: 14px;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+
+        .form-group input { flex: 1; }
+        .form-group select { width: 200px; cursor: pointer; }
+
+        .form-group input:focus, .form-group select:focus {
+            border-color: var(--primary);
+        }
+
+        .btn-adicionar {
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            transition: background 0.2s;
+            white-space: nowrap;
+        }
+
+        .btn-adicionar:hover {
+            background-color: var(--primary-hover);
+        }
+
+        .btn-secundario {
+            background-color: transparent;
+            color: var(--text-main);
+            border: 1px solid var(--border-color);
+            padding: 10px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            transition: all 0.2s;
+            white-space: nowrap;
+        }
+
+        .btn-secundario:hover {
+            border-color: var(--primary);
+            background-color: #1f242c;
+        }
+
+        .painel-divisoria {
+            display: none;
+            background: #0d1117;
+            border: 1px dashed var(--primary);
+            border-radius: 8px;
+            padding: 15px;
+            margin-top: 15px;
+            animation: fadeIn 0.2s ease-in-out;
+        }
+
+        .painel-divisoria h4 {
+            margin: 0 0 10px 0;
+            font-size: 14px;
+            color: #58a6ff;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-5px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .divisoria {
+            background: var(--card-bg);
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.2);
+            margin-bottom: 25px;
+            border: 1px solid var(--border-color);
+            overflow: hidden;
+        }
+
+        .divisoria-header {
+            padding: 15px 20px;
+            font-size: 16px;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .divisoria-concluidas {
+            border-left: 5px solid var(--success-border);
+        }
+        .divisoria-concluidas .divisoria-header {
+            background-color: var(--success-bg);
+            color: var(--success-text);
+        }
+
+        .divisoria-pendentes {
+            border-left: 5px solid var(--pending-border);
+        }
+        .divisoria-pendentes .divisoria-header {
+            background-color: var(--pending-bg);
+            color: var(--pending-text);
+        }
+
+        .lista-tarefas {
+            padding: 10px 20px;
+            list-style: none;
+            margin: 0;
+            min-height: 40px;
+            position: relative;
+        }
+
+        .secao-header-item {
+            background: var(--secao-bg);
+            border: 1px dashed var(--secao-border);
+            border-radius: 6px;
+            padding: 8px 12px;
+            margin: 15px 0 8px 0;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            color: #58a6ff;
+            font-weight: 600;
+            font-size: 13px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .secao-header-item:first-child {
+            margin-top: 5px;
+        }
+
+        .secao-titulo {
+            outline: none;
+            border: 1px solid transparent;
+            padding: 2px 6px;
+            border-radius: 4px;
+        }
+
+        .secao-titulo:focus {
+            border-color: var(--primary);
+            background: #0d1117;
+        }
+
+        .btn-apagar-secao {
+            background: transparent;
+            border: none;
+            color: var(--text-muted);
+            cursor: pointer;
+            font-size: 12px;
+            padding: 2px 6px;
+            border-radius: 4px;
+        }
+
+        .btn-apagar-secao:hover {
+            color: var(--danger);
+        }
+
+        .tarefa-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 12px 10px;
+            border-bottom: 1px solid var(--border-color);
+            gap: 15px;
+            background: var(--card-bg);
+            border-radius: 6px;
+            margin-bottom: 5px;
+            z-index: 1;
+            transition: background 0.2s, box-shadow 0.2s;
+        }
+
+        .tarefa-item:last-child {
+            border-bottom: none;
+            margin-bottom: 0;
+        }
+
+        .drag-handle {
+            color: var(--text-muted);
+            font-size: 16px;
+            cursor: grab;
+            user-select: none;
+            padding-right: 2px;
+            touch-action: none; 
+        }
+        .drag-handle:active {
+            cursor: grabbing;
+        }
+
+        .tarefa-item.dragging {
+            background: var(--card-bg);
+            border: 1px solid var(--primary);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6);
+            cursor: grabbing;
+        }
+
+        .tarefa-item.placeholder {
+            background: rgba(56, 139, 253, 0.05);
+            border: 1px dashed var(--primary);
+            box-shadow: none;
+            margin-bottom: 5px;
+        }
+
+        .tarefa-info {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            flex: 1;
+        }
+
+        .tarefa-info input[type="checkbox"] {
+            margin-top: 4px;
+            width: 18px;
+            height: 18px;
+            cursor: pointer;
+            accent-color: var(--primary);
+        }
+
+        .tarefa-detalhes {
+            display: flex;
+            flex-direction: column;
+            gap: 3px;
+            flex: 1;
+        }
+
+        .tarefa-titulo {
+            font-weight: 600;
+            font-size: 14px;
+            color: var(--text-main);
+            border: 1px solid transparent;
+            padding: 2px 4px;
+            border-radius: 4px;
+            outline: none;
+            transition: border-color 0.2s, background 0.2s;
+        }
+
+        .tarefa-titulo:focus {
+            border-color: var(--primary);
+            background: #0d1117;
+        }
+
+        .tarefa-obs {
+            font-size: 12px;
+            color: var(--text-muted);
+            border: 1px solid transparent;
+            padding: 2px 4px;
+            border-radius: 4px;
+            outline: none;
+            transition: border-color 0.2s, background 0.2s;
+        }
+
+        .tarefa-obs:focus {
+            border-color: var(--primary);
+            background: #0d1117;
+        }
+
+        .badge-numero {
+            background: var(--pending-bg);
+            color: var(--pending-text);
+            border: 1px solid var(--pending-border);
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: bold;
+            margin-right: 2px;
+            display: inline-block;
+            min-width: 20px;
+            text-align: center;
+        }
+
+        .concluida-texto .tarefa-titulo {
+            text-decoration: line-through;
+            color: var(--text-muted);
+        }
+
+        .acoes-item {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+        }
+
+        .btn-apagar {
+            background-color: transparent;
+            color: var(--text-muted);
+            border: 1px solid var(--border-color);
+            padding: 5px 10px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 12px;
+            transition: all 0.2s;
+            white-space: nowrap;
+        }
+
+        .btn-apagar:hover {
+            background-color: var(--danger);
+            color: white;
+            border-color: var(--danger);
+        }
+
+        .vazio {
+            padding: 20px;
+            text-align: center;
+            color: var(--text-muted);
+            font-style: italic;
+            font-size: 13px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <header>
+        <h1>Caderno Digital - Organização por Foco</h1>
+        <p>Crie divisórias para organizar seus pendentes. Arraste tarefas entre as divisórias para reordenar.</p>
+    </header>
+
+    <div class="sync-bar">
+        <button class="btn-sync" onclick="exportarTarefas()">📥 Exportar JSON</button>
+        <button class="btn-sync" onclick="document.getElementById('input-arquivo').click()">📤 Importar JSON</button>
+        <input type="file" id="input-arquivo" accept=".json" style="display: none;" onchange="importarTarefas(event)">
+    </div>
+
+    <div class="card-adicionar">
+        <h3>Adicionar Nova Tarefa ou Nota</h3>
+        <div class="form-group">
+            <input type="text" id="input-titulo" placeholder="Nome da tarefa..." onkeydown="if(event.key === 'Enter') adicionarTarefa()">
+            <select id="select-secao-add">
+                <option value="0">📌 Geral / Sem Divisória</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <input type="text" id="input-obs" placeholder="Observações ou detalhes (opcional)..." onkeydown="if(event.key === 'Enter') adicionarTarefa()">
+            <button class="btn-adicionar" onclick="adicionarTarefa()">Adicionar Tarefa</button>
+            <button class="btn-secundario" onclick="alternarPainelDivisoria()">➕ Nova Divisória</button>
+        </div>
+
+        <div id="painel-divisoria" class="painel-divisoria">
+            <h4>📁 Criar Nova Divisória</h4>
+            <div class="form-group" style="margin-bottom: 0;">
+                <input type="text" id="input-nome-divisoria" placeholder="Nome da divisória (ex: Módulo 3 - Testes)..." onkeydown="tratarTeclasDivisoria(event)">
+                <button class="btn-adicionar" onclick="confirmarCriarDivisoria()">Criar Divisória</button>
+                <button class="btn-secundario" onclick="alternarPainelDivisoria(false)">Cancelar</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="divisoria divisoria-concluidas">
+        <div class="divisoria-header">
+            <span>✨ Concluídas</span>
+            <span id="contador-concluidas" style="font-size: 13px;">(0)</span>
+        </div>
+        <ul id="lista-concluidas" class="lista-tarefas"></ul>
+    </div>
+
+    <div class="divisoria divisoria-pendentes">
+        <div class="divisoria-header">
+            <span>⚡ Foco Atual & Próximos Passos (Pendentes)</span>
+            <span id="contador-pendentes" style="font-size: 13px;">(0)</span>
+        </div>
+        <ul id="lista-pendentes" class="lista-tarefas"></ul>
+    </div>
+</div>
+
+<script>
+    const tarefasIniciais = [
+        { id: 1, tarefa: "Header Global (Botão Voltar + Ferramentas)", obs: "Index.html ainda não atualizado!", status: "Pendente", secaoId: 1 },
+        { id: 2, tarefa: "Layout do Caderno (Tela 3)", obs: "HTML base criado, ajustar CSS flex.", status: "Pendente", secaoId: 1 },
+        { id: 3, tarefa: "Lógica do Caderno (caderno.js)", obs: "Integração dos eventos do header.", status: "Pendente", secaoId: 1 },
+        { id: 4, tarefa: "Ferramentas do Header", obs: "Adicionar classe modo-caderno no body.", status: "Pendente", secaoId: 1 },
+        { id: 5, tarefa: "Vídeo para SVG em Loop", obs: "Substituir vídeo por SVG animado.", status: "Pendente", secaoId: 2 },
+        { id: 6, tarefa: "Canvas Infinito (Pan & Zoom)", obs: "Implementar deslocamento e pan visual.", status: "Pendente", secaoId: 2 },
+        { id: 12, tarefa: "Dashboard (Tela 1)", obs: "Grid 2x2, capas em SVG.", status: "Pronto", secaoId: null },
+        { id: 13, tarefa: "Transição de Ida", obs: "Efeito zoom out.", status: "Pronto", secaoId: null }
+    ];
+
+    const secoesIniciais = [
+        { id: 1, nome: "Módulo 1: Layout & Core" },
+        { id: 2, nome: "Módulo 2: Interatividade & Canvas" }
+    ];
+
+    const CHAVE_STORAGE = "tarefas_caderno_digital_v14";
+
+    function carregarDados() {
+        const salvo = localStorage.getItem(CHAVE_STORAGE) || localStorage.getItem("tarefas_caderno_digital_v13");
+        if (salvo) {
+            try {
+                const parsed = JSON.parse(salvo);
+                if (Array.isArray(parsed)) {
+                    return { secoes: [], tarefas: parsed };
+                } else if (parsed.tarefas) {
+                    return { 
+                        secoes: parsed.secoes || [], 
+                        tarefas: parsed.tarefas || [] 
+                    };
+                }
+            } catch(e) {}
+        }
+        return { secoes: secoesIniciais, tarefas: tarefasIniciais };
+    }
+
+    let dados = carregarDados();
+    let tarefas = dados.tarefas;
+    let secoes = dados.secoes;
+
+    function salvarDados() {
+        localStorage.setItem(CHAVE_STORAGE, JSON.stringify({ secoes, tarefas }));
+    }
+
+    function exportarTarefas() {
+        const payload = { secoes, tarefas };
+        const dadosStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(payload, null, 2));
+        const downloadAnchor = document.createElement('a');
+        downloadAnchor.setAttribute("href", dadosStr);
+        downloadAnchor.setAttribute("download", "tarefas_com_divisoria.json");
+        document.body.appendChild(downloadAnchor);
+        downloadAnchor.click();
+        downloadAnchor.remove();
+    }
+
+    function importarTarefas(event) {
+        const arquivo = event.target.files[0];
+        if (!arquivo) return;
+
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            try {
+                const dadosImportados = JSON.parse(e.target.result);
+                if (Array.isArray(dadosImportados)) {
+                    tarefas = dadosImportados;
+                    secoes = [];
+                } else if (dadosImportados.tarefas) {
+                    tarefas = dadosImportados.tarefas || [];
+                    secoes = dadosImportados.secoes || [];
+                } else {
+                    alert("O arquivo não possui um formato válido.");
+                    return;
+                }
+                salvarDados();
+                renderizar();
+                alert("Dados e divisórias sincronizados com sucesso!");
+            } catch (err) {
+                alert("Erro ao ler o arquivo JSON.");
+            }
+        };
+        reader.readAsText(arquivo);
+        event.target.value = "";
+    }
+
+    function alternarPainelDivisoria(forcarEstado = null) {
+        const painel = document.getElementById("painel-divisoria");
+        const input = document.getElementById("input-nome-divisoria");
+        
+        const visivel = forcarEstado !== null ? forcarEstado : painel.style.display !== "block";
+        
+        if (visivel) {
+            painel.style.display = "block";
+            input.value = "";
+            input.focus();
+        } else {
+            painel.style.display = "none";
+            input.value = "";
+        }
+    }
+
+    function tratarTeclasDivisoria(e) {
+        if (e.key === 'Enter') {
+            confirmarCriarDivisoria();
+        } else if (e.key === 'Escape') {
+            alternarPainelDivisoria(false);
+        }
+    }
+
+    function confirmarCriarDivisoria() {
+        const input = document.getElementById("input-nome-divisoria");
+        const nome = input.value.trim();
+        
+        if (!nome) {
+            input.focus();
+            return;
+        }
+
+        const maiorId = secoes.reduce((max, s) => s.id > max ? s.id : max, 0);
+        const novaSecao = { id: maiorId + 1, nome: nome };
+        
+        secoes.push(novaSecao);
+        salvarDados();
+        
+        alternarPainelDivisoria(false);
+        renderizar();
+
+        const selectSecao = document.getElementById("select-secao-add");
+        selectSecao.value = novaSecao.id;
+    }
+
+    function renomearSecao(id, novoNome) {
+        secoes = secoes.map(s => s.id === id ? { ...s, nome: novoNome.trim() } : s);
+        salvarDados();
+        renderizar();
+    }
+
+    function apagarSecao(id) {
+        if (confirm("Apagar esta divisória? As tarefas dessa área serão movidas para a Seção Geral.")) {
+            secoes = secoes.filter(s => s.id !== id);
+            tarefas = tarefas.map(t => t.secaoId === id ? { ...t, secaoId: null } : t);
+            salvarDados();
+            renderizar();
+        }
+    }
+
+    function adicionarTarefa() {
+        const inputTitulo = document.getElementById("input-titulo");
+        const inputObs = document.getElementById("input-obs");
+        const selectSecao = document.getElementById("select-secao-add");
+        
+        const titulo = inputTitulo.value.trim();
+        const obs = inputObs.value.trim();
+        const secaoId = Number(selectSecao.value) || null;
+
+        if (!titulo) {
+            inputTitulo.focus();
+            return;
+        }
+
+        const maiorId = tarefas.reduce((max, t) => t.id > max ? t.id : max, 0);
+        
+        const novaTarefa = {
+            id: maiorId + 1,
+            tarefa: titulo,
+            obs: obs || "Nota adicionada manualmente.",
+            status: "Pendente",
+            secaoId: secaoId
+        };
+
+        tarefas.unshift(novaTarefa);
+        salvarDados();
+
+        inputTitulo.value = "";
+        inputObs.value = "";
+        inputTitulo.focus();
+
+        renderizar();
+    }
+
+    function alternarStatus(id) {
+        tarefas = tarefas.map(t => {
+            if (t.id === id) t.status = t.status === "Pendente" ? "Pronto" : "Pendente";
+            return t;
+        });
+        salvarDados();
+        renderizar();
+    }
+
+    function apagarTarefa(id) {
+        if (confirm("Deseja apagar esta tarefa?")) {
+            tarefas = tarefas.filter(t => t.id !== id);
+            salvarDados();
+            renderizar();
+        }
+    }
+
+    function atualizarTexto(id, campo, novoValor) {
+        tarefas = tarefas.map(t => {
+            if (t.id === id) t[campo] = novoValor.trim();
+            return t;
+        });
+        salvarDados();
+    }
+
+    function atualizarSelectSecoes() {
+        const select = document.getElementById("select-secao-add");
+        const valorAtual = select.value;
+        
+        select.innerHTML = `<option value="0">📌 Geral / Sem Divisória</option>`;
+        secoes.forEach(s => {
+            select.innerHTML += `<option value="${s.id}">📂 ${s.nome}</option>`;
+        });
+
+        select.value = valorAtual || "0";
+    }
+
+    function renderizar() {
+        atualizarSelectSecoes();
+
+        const listaConcluidas = document.getElementById("lista-concluidas");
+        const listaPendentes = document.getElementById("lista-pendentes");
+        
+        listaConcluidas.innerHTML = "";
+        listaPendentes.innerHTML = "";
+
+        const concluidas = tarefas.filter(t => t.status === "Pronto");
+        const pendentes = tarefas.filter(t => t.status === "Pendente");
+
+        document.getElementById("contador-concluidas").textContent = `(${concluidas.length})`;
+        document.getElementById("contador-pendentes").textContent = `(${pendentes.length})`;
+
+        // --- 1. RENDERIZAR CONCLUÍDAS AGRUPADAS ---
+        const concluidasGerais = concluidas.filter(t => !t.secaoId || !secoes.some(s => s.id === t.secaoId));
+        if (concluidasGerais.length > 0) {
+            const headerGeral = document.createElement("li");
+            headerGeral.className = "secao-header-item";
+            headerGeral.innerHTML = `<span>📌 Geral / Sem Divisória</span>`;
+            listaConcluidas.appendChild(headerGeral);
+
+            concluidasGerais.forEach(t => {
+                listaConcluidas.appendChild(criarElementoTarefa(t, true, null));
+            });
+        }
+
+        secoes.forEach(secao => {
+            const concluidasDaSecao = concluidas.filter(t => t.secaoId === secao.id);
+            if (concluidasDaSecao.length > 0) {
+                const headerSecao = document.createElement("li");
+                headerSecao.className = "secao-header-item";
+                headerSecao.innerHTML = `
+                    <span>📂 <span class="secao-titulo" contenteditable="true" onblur="renomearSecao(${secao.id}, this.textContent)">${secao.nome}</span></span>
+                    <button class="btn-apagar-secao" onclick="apagarSecao(${secao.id})" title="Excluir Divisória">✕ Remover</button>
+                `;
+                listaConcluidas.appendChild(headerSecao);
+
+                concluidasDaSecao.forEach(t => {
+                    listaConcluidas.appendChild(criarElementoTarefa(t, true, null));
+                });
+            }
+        });
+
+        if (listaConcluidas.children.length === 0) {
+            listaConcluidas.innerHTML = `<div class="vazio">Nenhuma tarefa concluída no momento.</div>`;
+        }
+
+        // --- 2. RENDERIZAR PENDENTES COM CONTAGEM POR DIVISÓRIA ---
+        const pendentesGerais = pendentes.filter(t => !t.secaoId || !secoes.some(s => s.id === t.secaoId));
+        if (pendentesGerais.length > 0) {
+            const headerGeral = document.createElement("li");
+            headerGeral.className = "secao-header-item";
+            headerGeral.dataset.secaoId = "0";
+            headerGeral.innerHTML = `<span>📌 Geral / Sem Divisória</span>`;
+            listaPendentes.appendChild(headerGeral);
+
+            let contadorGeral = 1;
+            pendentesGerais.forEach(t => {
+                listaPendentes.appendChild(criarElementoTarefa(t, false, contadorGeral++));
+            });
+        }
+
+        secoes.forEach(secao => {
+            const pendentesDaSecao = pendentes.filter(t => t.secaoId === secao.id);
+            const totalNaSecao = tarefas.filter(t => t.secaoId === secao.id);
+
+            // Exibe nos pendentes apenas se houver tarefas pendentes NELA ou se for uma divisória recém-criada sem nenhuma tarefa.
+            // Se todas as tarefas forem concluídas, o cabeçalho dos pendentes é ocultado.
+            const deveExibirNosPendentes = pendentesDaSecao.length > 0 || totalNaSecao.length === 0;
+
+            if (deveExibirNosPendentes) {
+                const headerSecao = document.createElement("li");
+                headerSecao.className = "secao-header-item";
+                headerSecao.dataset.secaoId = secao.id;
+                headerSecao.innerHTML = `
+                    <span>📂 <span class="secao-titulo" contenteditable="true" onblur="renomearSecao(${secao.id}, this.textContent)">${secao.nome}</span></span>
+                    <button class="btn-apagar-secao" onclick="apagarSecao(${secao.id})" title="Excluir Divisória">✕ Remover</button>
+                `;
+                listaPendentes.appendChild(headerSecao);
+
+                let contadorSecao = 1;
+                pendentesDaSecao.forEach(t => {
+                    listaPendentes.appendChild(criarElementoTarefa(t, false, contadorSecao++));
+                });
+            }
+        });
+
+        if (listaPendentes.children.length === 0) {
+            listaPendentes.innerHTML = `<div class="vazio">Todas as tarefas foram concluídas!</div>`;
+        }
+    }
+
+    function criarElementoTarefa(t, isConcluida, numeroExibicao) {
+        const li = document.createElement("li");
+        li.className = `tarefa-item ${isConcluida ? 'concluida-texto' : ''}`;
+        li.dataset.id = t.id;
+
+        li.innerHTML = `
+            <div class="tarefa-info">
+                ${!isConcluida ? `<span class="drag-handle" title="Arraste para reordenar ou mover de divisória">☰</span><span class="badge-numero">${numeroExibicao}</span>` : ''}
+                <input type="checkbox" ${isConcluida ? 'checked' : ''} onclick="alternarStatus(${t.id})" title="Marcar como concluída/pendente">
+                <div class="tarefa-detalhes">
+                    <span class="tarefa-titulo" contenteditable="true" onblur="atualizarTexto(${t.id}, 'tarefa', this.textContent)">${t.tarefa}</span>
+                    <span class="tarefa-obs" contenteditable="true" onblur="atualizarTexto(${t.id}, 'obs', this.textContent)">${t.obs}</span>
+                </div>
+            </div>
+            <div class="acoes-item">
+                ${!isConcluida ? `<button class="btn-apagar" onclick="apagarTarefa(${t.id})">Apagar</button>` : ''}
+            </div>
+        `;
+        return li;
+    }
+
+    function sincronizarOrdemEAtribuicoes() {
+        const listaPendentes = document.getElementById("lista-pendentes");
+        const elementos = [...listaPendentes.children];
+        
+        let secaoAtualId = null;
+        const novasTarefasPendentes = [];
+
+        elementos.forEach(el => {
+            if (el.classList.contains("secao-header-item")) {
+                const idSecao = Number(el.dataset.secaoId);
+                secaoAtualId = idSecao === 0 ? null : idSecao;
+            } else if (el.classList.contains("tarefa-item")) {
+                const idTarefa = Number(el.dataset.id);
+                const tarefaObj = tarefas.find(t => t.id === idTarefa);
+                if (tarefaObj) {
+                    tarefaObj.secaoId = secaoAtualId;
+                    novasTarefasPendentes.push(tarefaObj);
+                }
+            }
+        });
+
+        const concluidas = tarefas.filter(item => item.status === "Pronto");
+        tarefas = [...novasTarefasPendentes, ...concluidas];
+        salvarDados();
+    }
+
+    function inicializarArrastoMotorizado() {
+        const lista = document.getElementById("lista-pendentes");
+        
+        let arrastando = null;
+        let placeholder = null;
+        let startY = 0;
+        let startTop = 0;
+
+        lista.addEventListener('mousedown', iniciarArrasto);
+        lista.addEventListener('touchstart', iniciarArrasto, { passive: false });
+
+        function iniciarArrasto(e) {
+            const handle = e.target.closest('.drag-handle');
+            if (!handle) return;
+            
+            arrastando = handle.closest('.tarefa-item');
+            if (!arrastando) return;
+
+            e.preventDefault(); 
+            
+            const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+            const rect = arrastando.getBoundingClientRect();
+            
+            startY = clientY;
+            startTop = rect.top;
+
+            placeholder = document.createElement('li');
+            placeholder.className = 'tarefa-item placeholder';
+            placeholder.style.height = `${rect.height}px`;
+            
+            arrastando.parentNode.insertBefore(placeholder, arrastando.nextSibling);
+
+            arrastando.style.position = 'fixed';
+            arrastando.style.margin = '0';
+            arrastando.style.zIndex = '9999';
+            arrastando.style.width = `${rect.width}px`;
+            arrastando.style.top = `${startTop}px`;
+            arrastando.style.left = `${rect.left}px`;
+            arrastando.style.pointerEvents = 'none'; 
+            arrastando.style.transition = 'none';
+            arrastando.style.transform = 'translateY(0px)';
+            arrastando.classList.add('dragging');
+
+            document.addEventListener('mousemove', moverArrasto);
+            document.addEventListener('touchmove', moverArrasto, { passive: false });
+            document.addEventListener('mouseup', soltarArrasto);
+            document.addEventListener('touchend', soltarArrasto);
+        }
+
+        function moverArrasto(e) {
+            if (!arrastando) return;
+            e.preventDefault(); 
+
+            const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+            const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+
+            const deltaY = clientY - startY;
+            arrastando.style.transform = `translateY(${deltaY}px)`;
+
+            const alvo = document.elementFromPoint(clientX, clientY);
+            if (!alvo) return;
+
+            const itemSobMouse = alvo.closest('.tarefa-item:not(.dragging):not(.placeholder), .secao-header-item');
+            if (itemSobMouse && itemSobMouse.parentNode === lista) {
+                const rectAlvo = itemSobMouse.getBoundingClientRect();
+                const meioY = rectAlvo.top + rectAlvo.height / 2;
+
+                if (clientY < meioY) {
+                    if (placeholder.nextSibling !== itemSobMouse) {
+                        lista.insertBefore(placeholder, itemSobMouse);
+                    }
+                } else {
+                    if (placeholder.previousSibling !== itemSobMouse) {
+                        lista.insertBefore(placeholder, itemSobMouse.nextSibling);
+                    }
+                }
+            }
+        }
+
+        function soltarArrasto() {
+            if (!arrastando) return;
+
+            lista.insertBefore(arrastando, placeholder);
+            
+            arrastando.style = ''; 
+            arrastando.classList.remove('dragging');
+            
+            placeholder.remove();
+            
+            arrastando = null;
+            placeholder = null;
+
+            document.removeEventListener('mousemove', moverArrasto);
+            document.removeEventListener('touchmove', moverArrasto);
+            document.removeEventListener('mouseup', soltarArrasto);
+            document.removeEventListener('touchend', soltarArrasto);
+
+            sincronizarOrdemEAtribuicoes();
+            renderizar();
+        }
+    }
+
+    renderizar();
+    inicializarArrastoMotorizado(); 
+</script>
+
+</body>
+</html>
