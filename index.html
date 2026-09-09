@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Caderno Digital - Com Divisórias de Foco</title>
+    <title>Task List - Múltiplos Projetos</title>
     <style>
         :root {
             --bg-color: #0d1117;
@@ -23,6 +23,8 @@
             --danger-hover: #da3633;
             --secao-bg: #21262d;
             --secao-border: #484f58;
+            --aba-bg: #161b22;
+            --aba-active: #21262d;
         }
 
         body {
@@ -38,15 +40,146 @@
             margin: 0 auto;
         }
 
+        /* ----- ABAS / PROJETOS ----- */
+        .abas-wrapper {
+            background: var(--card-bg);
+            border-radius: 10px 10px 0 0;
+            border: 1px solid var(--border-color);
+            border-bottom: none;
+            padding: 8px 12px 0 12px;
+            display: flex;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 6px;
+        }
+
+        .aba-item {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            padding: 8px 10px 8px 14px;
+            background: var(--aba-bg);
+            border: 1px solid var(--border-color);
+            border-bottom: none;
+            border-radius: 8px 8px 0 0;
+            color: var(--text-muted);
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.2s, color 0.2s, border-color 0.2s;
+            user-select: none;
+            position: relative;
+        }
+
+        .aba-item:hover {
+            background: var(--aba-active);
+            color: var(--text-main);
+        }
+
+        .aba-item.ativo {
+            background: var(--aba-active);
+            color: var(--text-main);
+            border-color: var(--primary);
+            border-bottom-color: var(--aba-active);
+        }
+
+        .aba-item .btn-fechar-aba,
+        .aba-item .btn-editar-aba {
+            background: transparent;
+            border: none;
+            color: var(--text-muted);
+            font-size: 13px;
+            line-height: 1;
+            cursor: pointer;
+            padding: 0 4px;
+            border-radius: 4px;
+            transition: background 0.2s, color 0.2s, opacity 0.2s;
+            opacity: 0;
+        }
+
+        .aba-item:hover .btn-editar-aba,
+        .aba-item:hover .btn-fechar-aba {
+            opacity: 1;
+        }
+
+        .aba-item .btn-editar-aba:hover {
+            background: var(--primary);
+            color: white;
+        }
+
+        .aba-item .btn-fechar-aba:hover {
+            background: var(--danger);
+            color: white;
+        }
+
+        .btn-nova-aba {
+            background: transparent;
+            border: 1px dashed var(--border-color);
+            color: var(--text-muted);
+            padding: 6px 12px;
+            border-radius: 8px 8px 0 0;
+            font-size: 20px;
+            cursor: pointer;
+            transition: border-color 0.2s, color 0.2s;
+            line-height: 1;
+            margin-left: auto;
+        }
+
+        .btn-nova-aba:hover {
+            border-color: var(--primary);
+            color: var(--primary);
+        }
+
+        .aba-item .nome-aba {
+            outline: none;
+            border: none;
+            background: transparent;
+            color: inherit;
+            font: inherit;
+            font-weight: 600;
+            padding: 0 2px;
+            min-width: 40px;
+            cursor: text;
+        }
+
+        .aba-item .nome-aba:focus {
+            outline: 1px solid var(--primary);
+            border-radius: 4px;
+            background: #0d1117;
+        }
+
+        /* ----- HEADER ----- */
         header {
-            margin-bottom: 25px;
+            margin: 12px 0 20px 0;
             text-align: center;
         }
 
         header h1 {
             color: var(--text-main);
-            margin-bottom: 5px;
+            margin-bottom: 4px;
             font-size: 26px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        header h1 .nome-projeto-editavel {
+            outline: none;
+            border: none;
+            background: transparent;
+            color: inherit;
+            font: inherit;
+            font-weight: 600;
+            padding: 0 6px;
+            border-radius: 4px;
+            min-width: 60px;
+            cursor: text;
+        }
+
+        header h1 .nome-projeto-editavel:focus {
+            outline: 1px solid var(--primary);
+            background: #0d1117;
         }
 
         header p {
@@ -102,6 +235,7 @@
             display: flex;
             gap: 10px;
             margin-bottom: 10px;
+            flex-wrap: wrap;
         }
 
         .form-group input, .form-group select {
@@ -115,8 +249,8 @@
             transition: border-color 0.2s;
         }
 
-        .form-group input { flex: 1; }
-        .form-group select { width: 200px; cursor: pointer; }
+        .form-group input { flex: 1; min-width: 150px; }
+        .form-group select { flex: 0 1 200px; cursor: pointer; }
 
         .form-group input:focus, .form-group select:focus {
             border-color: var(--primary);
@@ -165,6 +299,10 @@
             padding: 15px;
             margin-top: 15px;
             animation: fadeIn 0.2s ease-in-out;
+        }
+
+        .painel-divisoria.ativo {
+            display: block;
         }
 
         .painel-divisoria h4 {
@@ -221,12 +359,58 @@
             position: relative;
         }
 
+        /* --- HEADER E HANDLE DA DIVISÓRIA --- */
+        .secao-header-wrapper {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin: 18px 0 8px 0;
+            position: relative;
+            transition: background 0.2s, box-shadow 0.2s;
+        }
+
+        .secao-header-wrapper:first-child {
+            margin-top: 5px;
+        }
+
+        .drag-handle-secao {
+            background: #161b22;
+            border: 1px solid var(--secao-border);
+            color: #58a6ff;
+            width: 32px;
+            height: 34px;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: grab;
+            user-select: none;
+            touch-action: none;
+            flex-shrink: 0;
+            transition: all 0.2s ease;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .drag-handle-secao:hover {
+            background: #21262d;
+            border-color: var(--primary);
+            color: #ffffff;
+            transform: scale(1.05);
+        }
+
+        .drag-handle-secao:active {
+            cursor: grabbing;
+            background: var(--primary);
+            color: #ffffff;
+        }
+
         .secao-header-item {
+            flex: 1;
             background: var(--secao-bg);
             border: 1px dashed var(--secao-border);
             border-radius: 6px;
             padding: 8px 12px;
-            margin: 15px 0 8px 0;
+            margin: 0;
             display: flex;
             align-items: center;
             justify-content: space-between;
@@ -237,8 +421,27 @@
             letter-spacing: 0.5px;
         }
 
-        .secao-header-item:first-child {
-            margin-top: 5px;
+        .secao-header-concluida {
+            background: rgba(46, 160, 67, 0.1);
+            border: 1px dashed var(--success-border);
+            color: var(--success-text);
+            margin: 15px 0 8px 0;
+        }
+
+        .secao-header-wrapper.dragging {
+            background: var(--card-bg);
+            border-radius: 8px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.7);
+            opacity: 0.95;
+            pointer-events: none;
+        }
+
+        .secao-header-wrapper.placeholder-secao {
+            background: rgba(56, 139, 253, 0.08);
+            border: 1px dashed var(--primary);
+            border-radius: 8px;
+            box-shadow: none;
+            margin: 18px 0 8px 0;
         }
 
         .secao-titulo {
@@ -267,6 +470,7 @@
             color: var(--danger);
         }
 
+        /* --- TAREFAS --- */
         .tarefa-item {
             display: flex;
             align-items: center;
@@ -294,6 +498,7 @@
             padding-right: 2px;
             touch-action: none; 
         }
+
         .drag-handle:active {
             cursor: grabbing;
         }
@@ -303,6 +508,7 @@
             border: 1px solid var(--primary);
             box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6);
             cursor: grabbing;
+            pointer-events: none;
         }
 
         .tarefa-item.placeholder {
@@ -409,7 +615,7 @@
         }
 
         .vazio {
-            padding: 20px;
+            padding: 15px;
             text-align: center;
             color: var(--text-muted);
             font-style: italic;
@@ -420,15 +626,25 @@
 <body>
 
 <div class="container">
+
+    <!-- ABAS DE PROJETOS -->
+    <div class="abas-wrapper" id="abas-wrapper">
+        <!-- as abas serão inseridas aqui via JS -->
+        <button class="btn-nova-aba" id="btnNovaAba" title="Criar novo projeto">+</button>
+    </div>
+
     <header>
-        <h1>Caderno Digital - Organização por Foco</h1>
-        <p>Crie divisórias para organizar seus pendentes. Arraste tarefas entre as divisórias para reordenar.</p>
+        <h1>
+            📋
+            <span id="nome-projeto-atual" class="nome-projeto-editavel" contenteditable="true">Task List</span>
+        </h1>
+        <p>Gerencie múltiplos projetos — cada aba é um arquivo JSON separado</p>
     </header>
 
     <div class="sync-bar">
-        <button class="btn-sync" onclick="exportarTarefas()">📥 Exportar JSON</button>
-        <button class="btn-sync" onclick="document.getElementById('input-arquivo').click()">📤 Importar JSON</button>
-        <input type="file" id="input-arquivo" accept=".json" style="display: none;" onchange="importarTarefas(event)">
+        <button class="btn-sync" onclick="exportarProjetoAtual()">⬇ Exportar Projeto</button>
+        <button class="btn-sync" onclick="document.getElementById('input-arquivo').click()">⬆ Importar Projeto</button>
+        <input type="file" id="input-arquivo" accept=".json" style="display: none;" onchange="importarProjeto(event)">
     </div>
 
     <div class="card-adicionar">
@@ -446,7 +662,7 @@
         </div>
 
         <div id="painel-divisoria" class="painel-divisoria">
-            <h4>📁 Criar Nova Divisória</h4>
+            <h4>📂 Criar Nova Divisória</h4>
             <div class="form-group" style="margin-bottom: 0;">
                 <input type="text" id="input-nome-divisoria" placeholder="Nome da divisória (ex: Módulo 3 - Testes)..." onkeydown="tratarTeclasDivisoria(event)">
                 <button class="btn-adicionar" onclick="confirmarCriarDivisoria()">Criar Divisória</button>
@@ -465,7 +681,7 @@
 
     <div class="divisoria divisoria-pendentes">
         <div class="divisoria-header">
-            <span>⚡ Foco Atual & Próximos Passos (Pendentes)</span>
+            <span>⚡ Pendentes</span>
             <span id="contador-pendentes" style="font-size: 13px;">(0)</span>
         </div>
         <ul id="lista-pendentes" class="lista-tarefas"></ul>
@@ -473,7 +689,12 @@
 </div>
 
 <script>
-    const tarefasIniciais = [
+    // ======================================================================
+    //  GERENCIAMENTO DE PROJETOS
+    // ======================================================================
+
+    // Dados iniciais para o projeto padrão
+    const TAREFAS_INICIAIS = [
         { id: 1, tarefa: "Header Global (Botão Voltar + Ferramentas)", obs: "Index.html ainda não atualizado!", status: "Pendente", secaoId: 1 },
         { id: 2, tarefa: "Layout do Caderno (Tela 3)", obs: "HTML base criado, ajustar CSS flex.", status: "Pendente", secaoId: 1 },
         { id: 3, tarefa: "Lógica do Caderno (caderno.js)", obs: "Integração dos eventos do header.", status: "Pendente", secaoId: 1 },
@@ -484,85 +705,368 @@
         { id: 13, tarefa: "Transição de Ida", obs: "Efeito zoom out.", status: "Pronto", secaoId: null }
     ];
 
-    const secoesIniciais = [
+    const SECOES_INICIAIS = [
         { id: 1, nome: "Módulo 1: Layout & Core" },
         { id: 2, nome: "Módulo 2: Interatividade & Canvas" }
     ];
 
-    const CHAVE_STORAGE = "tarefas_caderno_digital_v14";
+    const ORDEM_SECOES_INICIAL = [0, 1, 2];
 
-    function carregarDados() {
-        const salvo = localStorage.getItem(CHAVE_STORAGE) || localStorage.getItem("tarefas_caderno_digital_v13");
-        if (salvo) {
+    // ---- Variáveis globais do projeto atual ----
+    let tarefas = [];
+    let secoes = [];
+    let ordemSecoes = [];
+
+    // ---- Estrutura de todos os projetos ----
+    let projetos = {};          // { id: { nome, tarefas, secoes, ordemSecoes } }
+    let projetoAtualId = null;   // string
+
+    const STORAGE_KEY = 'tasklist_multiprojetos_v1';
+
+    // ---- Funções de persistência ----
+    function salvarProjetos() {
+        const dados = {
+            projetos: projetos,
+            projetoAtualId: projetoAtualId
+        };
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(dados));
+    }
+
+    function carregarProjetos() {
+        const raw = localStorage.getItem(STORAGE_KEY);
+        if (raw) {
             try {
-                const parsed = JSON.parse(salvo);
-                if (Array.isArray(parsed)) {
-                    return { secoes: [], tarefas: parsed };
-                } else if (parsed.tarefas) {
-                    return { 
-                        secoes: parsed.secoes || [], 
-                        tarefas: parsed.tarefas || [] 
-                    };
+                const dados = JSON.parse(raw);
+                if (dados.projetos && typeof dados.projetos === 'object') {
+                    projetos = dados.projetos;
+                    projetoAtualId = dados.projetoAtualId || null;
+                    if (projetoAtualId && !projetos[projetoAtualId]) {
+                        projetoAtualId = null;
+                    }
+                    if (!projetoAtualId || Object.keys(projetos).length === 0) {
+                        criarProjetoPadrao();
+                    }
+                    return;
                 }
-            } catch(e) {}
+            } catch (e) {}
         }
-        return { secoes: secoesIniciais, tarefas: tarefasIniciais };
+        criarProjetoPadrao();
     }
 
-    let dados = carregarDados();
-    let tarefas = dados.tarefas;
-    let secoes = dados.secoes;
-
-    function salvarDados() {
-        localStorage.setItem(CHAVE_STORAGE, JSON.stringify({ secoes, tarefas }));
+    function criarProjetoPadrao() {
+        const id = 'projeto_' + Date.now();
+        projetos = {};
+        projetos[id] = {
+            nome: 'Meu Projeto',
+            tarefas: JSON.parse(JSON.stringify(TAREFAS_INICIAIS)),
+            secoes: JSON.parse(JSON.stringify(SECOES_INICIAIS)),
+            ordemSecoes: [...ORDEM_SECOES_INICIAL]
+        };
+        projetoAtualId = id;
+        salvarProjetos();
     }
 
-    function exportarTarefas() {
-        const payload = { secoes, tarefas };
-        const dadosStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(payload, null, 2));
-        const downloadAnchor = document.createElement('a');
-        downloadAnchor.setAttribute("href", dadosStr);
-        downloadAnchor.setAttribute("download", "tarefas_com_divisoria.json");
-        document.body.appendChild(downloadAnchor);
-        downloadAnchor.click();
-        downloadAnchor.remove();
+    function carregarProjeto(id) {
+        if (!id || !projetos[id]) {
+            criarProjetoPadrao();
+            id = projetoAtualId;
+        }
+        const proj = projetos[id];
+        tarefas = proj.tarefas || [];
+        secoes = proj.secoes || [];
+        ordemSecoes = proj.ordemSecoes || [0];
+        projetoAtualId = id;
+        // Atualiza UI
+        const nomeProjeto = proj.nome || 'Sem nome';
+        const spanNome = document.getElementById('nome-projeto-atual');
+        spanNome.textContent = nomeProjeto;
+        document.title = nomeProjeto + ' - Task List';
+        atualizarSelectSecoes();
+        renderizar();
+        renderizarAbas();
+        salvarProjetos();
     }
 
-    function importarTarefas(event) {
+    function salvarProjetoAtual() {
+        if (!projetoAtualId || !projetos[projetoAtualId]) return;
+        const proj = projetos[projetoAtualId];
+        proj.tarefas = tarefas;
+        proj.secoes = secoes;
+        proj.ordemSecoes = ordemSecoes;
+        salvarProjetos();
+    }
+
+    // ---- Funções de manipulação de projetos ----
+    function criarNovoProjeto(nome) {
+        if (!nome) nome = prompt('Nome do novo projeto:', 'Novo Projeto');
+        if (!nome) return;
+        const id = 'projeto_' + Date.now();
+        projetos[id] = {
+            nome: nome.trim(),
+            tarefas: [],
+            secoes: [],
+            ordemSecoes: [0]
+        };
+        salvarProjetos();
+        carregarProjeto(id);
+    }
+
+    // Função de renomear (agora sem prompt, apenas atualiza o nome)
+    function renomearProjeto(id, novoNome) {
+        if (!id || !projetos[id]) return;
+        const nomeFinal = (novoNome || '').trim();
+        if (!nomeFinal) {
+            // Se ficar vazio, reverter para o nome anterior
+            const span = document.getElementById('nome-projeto-atual');
+            span.textContent = projetos[id].nome;
+            return;
+        }
+        projetos[id].nome = nomeFinal;
+        salvarProjetos();
+        if (id === projetoAtualId) {
+            document.getElementById('nome-projeto-atual').textContent = nomeFinal;
+            document.title = nomeFinal + ' - Task List';
+        }
+        renderizarAbas(); // atualiza o nome nas abas
+    }
+
+    function excluirProjeto(id) {
+        if (!id || !projetos[id]) return;
+        const qtd = Object.keys(projetos).length;
+        if (qtd <= 1) {
+            alert('Não é possível excluir o único projeto. Crie outro primeiro.');
+            return;
+        }
+        if (!confirm(`Excluir o projeto "${projetos[id].nome}"? Esta ação é irreversível.`)) return;
+        delete projetos[id];
+        if (id === projetoAtualId) {
+            const ids = Object.keys(projetos);
+            if (ids.length > 0) {
+                carregarProjeto(ids[0]);
+            } else {
+                criarProjetoPadrao();
+            }
+        } else {
+            salvarProjetos();
+            renderizarAbas();
+        }
+    }
+
+    // ---- Exportação / Importação ----
+    function exportarProjetoAtual() {
+        if (!projetoAtualId || !projetos[projetoAtualId]) return;
+        const proj = projetos[projetoAtualId];
+        const payload = {
+            nome: proj.nome,
+            tarefas: proj.tarefas,
+            secoes: proj.secoes,
+            ordemSecoes: proj.ordemSecoes
+        };
+        const json = JSON.stringify(payload, null, 2);
+        const blob = new Blob([json], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `${proj.nome || 'projeto'}.json`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+    }
+
+    function importarProjeto(event) {
         const arquivo = event.target.files[0];
         if (!arquivo) return;
 
         const reader = new FileReader();
         reader.onload = function(e) {
             try {
-                const dadosImportados = JSON.parse(e.target.result);
-                if (Array.isArray(dadosImportados)) {
-                    tarefas = dadosImportados;
-                    secoes = [];
-                } else if (dadosImportados.tarefas) {
-                    tarefas = dadosImportados.tarefas || [];
-                    secoes = dadosImportados.secoes || [];
-                } else {
-                    alert("O arquivo não possui um formato válido.");
+                const dados = JSON.parse(e.target.result);
+                if (!dados.tarefas && !dados.secoes) {
+                    if (Array.isArray(dados)) {
+                        const nome = prompt('Nome do projeto importado:', 'Importado');
+                        if (nome === null) return;
+                        const id = 'projeto_' + Date.now();
+                        projetos[id] = {
+                            nome: nome.trim() || 'Importado',
+                            tarefas: dados,
+                            secoes: [],
+                            ordemSecoes: [0]
+                        };
+                        salvarProjetos();
+                        carregarProjeto(id);
+                        alert('Projeto importado com sucesso!');
+                        return;
+                    }
+                    alert('Formato de arquivo inválido.');
                     return;
                 }
-                salvarDados();
-                renderizar();
-                alert("Dados e divisórias sincronizados com sucesso!");
+
+                const nome = prompt('Nome do projeto importado:', dados.nome || 'Importado');
+                if (nome === null) return;
+                const id = 'projeto_' + Date.now();
+                projetos[id] = {
+                    nome: nome.trim() || 'Importado',
+                    tarefas: dados.tarefas || [],
+                    secoes: dados.secoes || [],
+                    ordemSecoes: dados.ordemSecoes || [0]
+                };
+                salvarProjetos();
+                carregarProjeto(id);
+                alert('Projeto importado com sucesso!');
             } catch (err) {
-                alert("Erro ao ler o arquivo JSON.");
+                alert('Erro ao ler o arquivo JSON: ' + err.message);
             }
         };
         reader.readAsText(arquivo);
-        event.target.value = "";
+        event.target.value = '';
+    }
+
+    // ---- Renderização das Abas ----
+    function renderizarAbas() {
+        const wrapper = document.getElementById('abas-wrapper');
+        const botoes = wrapper.querySelectorAll('.aba-item');
+        botoes.forEach(el => el.remove());
+
+        const ids = Object.keys(projetos);
+        ids.sort((a, b) => a.localeCompare(b));
+
+        ids.forEach(id => {
+            const proj = projetos[id];
+            const div = document.createElement('div');
+            div.className = 'aba-item' + (id === projetoAtualId ? ' ativo' : '');
+            div.dataset.id = id;
+
+            const spanNome = document.createElement('span');
+            spanNome.className = 'nome-aba';
+            spanNome.textContent = proj.nome;
+            spanNome.contentEditable = true;
+            spanNome.title = 'Clique para editar o nome';
+            spanNome.addEventListener('blur', function(e) {
+                const novo = this.textContent.trim();
+                if (novo !== proj.nome) {
+                    renomearProjeto(id, novo);
+                } else {
+                    // se não mudou, apenas restaura o texto original (caso tenha sido alterado sem querer)
+                    this.textContent = proj.nome;
+                }
+            });
+            spanNome.addEventListener('keydown', function(e) {
+                if (e.key === 'Enter') {
+                    e.preventDefault();
+                    this.blur();
+                }
+                if (e.key === 'Escape') {
+                    this.textContent = proj.nome;
+                    this.blur();
+                }
+            });
+            // Impedir que clique no nome dispare a troca de projeto
+            spanNome.addEventListener('click', function(e) {
+                e.stopPropagation();
+            });
+
+            const btnEditar = document.createElement('button');
+            btnEditar.className = 'btn-editar-aba';
+            btnEditar.innerHTML = '✎';
+            btnEditar.title = 'Renomear projeto (clique no nome)';
+            btnEditar.addEventListener('click', function(e) {
+                e.stopPropagation();
+                // Foca no spanNome para edição
+                spanNome.focus();
+                // Seleciona todo o texto
+                const range = document.createRange();
+                range.selectNodeContents(spanNome);
+                const sel = window.getSelection();
+                sel.removeAllRanges();
+                sel.addRange(range);
+            });
+
+            const btnFechar = document.createElement('button');
+            btnFechar.className = 'btn-fechar-aba';
+            btnFechar.innerHTML = '✕';
+            btnFechar.title = 'Excluir projeto';
+            btnFechar.addEventListener('click', function(e) {
+                e.stopPropagation();
+                excluirProjeto(id);
+            });
+
+            div.appendChild(spanNome);
+            div.appendChild(btnEditar);
+            div.appendChild(btnFechar);
+
+            div.addEventListener('click', function(e) {
+                if (e.target.closest('.btn-fechar-aba') || e.target.closest('.btn-editar-aba')) return;
+                if (e.target.closest('.nome-aba')) return; // já tratado
+                if (id !== projetoAtualId) {
+                    salvarProjetoAtual();
+                    carregarProjeto(id);
+                }
+            });
+
+            wrapper.insertBefore(div, wrapper.querySelector('.btn-nova-aba'));
+        });
+    }
+
+    // ---- Inicialização ----
+    function inicializar() {
+        carregarProjetos();
+        if (projetoAtualId) {
+            carregarProjeto(projetoAtualId);
+        } else {
+            criarProjetoPadrao();
+            carregarProjeto(projetoAtualId);
+        }
+        renderizarAbas();
+
+        // Evento para edição inline do nome no header
+        const spanHeader = document.getElementById('nome-projeto-atual');
+        spanHeader.addEventListener('blur', function() {
+            const novo = this.textContent.trim();
+            if (novo && novo !== projetos[projetoAtualId].nome) {
+                renomearProjeto(projetoAtualId, novo);
+            } else {
+                // Reverte para o nome atual
+                this.textContent = projetos[projetoAtualId].nome;
+            }
+        });
+        spanHeader.addEventListener('keydown', function(e) {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                this.blur();
+            }
+            if (e.key === 'Escape') {
+                this.textContent = projetos[projetoAtualId].nome;
+                this.blur();
+            }
+        });
+
+        document.getElementById('btnNovaAba').addEventListener('click', function() {
+            const nome = prompt('Nome do novo projeto:', 'Novo Projeto');
+            if (nome) criarNovoProjeto(nome);
+        });
+
+        inicializarArrastoMotorizado();
+    }
+
+    // ======================================================================
+    //  FUNÇÕES HERDADAS
+    // ======================================================================
+
+    function atualizarSelectSecoes() {
+        const select = document.getElementById("select-secao-add");
+        const valorAtual = select.value;
+        select.innerHTML = `<option value="0">📌 Geral / Sem Divisória</option>`;
+        secoes.forEach(s => {
+            select.innerHTML += `<option value="${s.id}"> ${s.nome}</option>`;
+        });
+        select.value = valorAtual || "0";
     }
 
     function alternarPainelDivisoria(forcarEstado = null) {
         const painel = document.getElementById("painel-divisoria");
         const input = document.getElementById("input-nome-divisoria");
-        
         const visivel = forcarEstado !== null ? forcarEstado : painel.style.display !== "block";
-        
         if (visivel) {
             painel.style.display = "block";
             input.value = "";
@@ -584,36 +1088,38 @@
     function confirmarCriarDivisoria() {
         const input = document.getElementById("input-nome-divisoria");
         const nome = input.value.trim();
-        
         if (!nome) {
             input.focus();
             return;
         }
-
         const maiorId = secoes.reduce((max, s) => s.id > max ? s.id : max, 0);
         const novaSecao = { id: maiorId + 1, nome: nome };
-        
         secoes.push(novaSecao);
-        salvarDados();
-        
+        if (!ordemSecoes.includes(novaSecao.id)) {
+            ordemSecoes.push(novaSecao.id);
+        }
+        salvarProjetoAtual();
         alternarPainelDivisoria(false);
         renderizar();
-
         const selectSecao = document.getElementById("select-secao-add");
         selectSecao.value = novaSecao.id;
     }
 
     function renomearSecao(id, novoNome) {
-        secoes = secoes.map(s => s.id === id ? { ...s, nome: novoNome.trim() } : s);
-        salvarDados();
-        renderizar();
+        const idx = secoes.findIndex(s => s.id === id);
+        if (idx !== -1) {
+            secoes[idx].nome = novoNome.trim();
+            salvarProjetoAtual();
+            renderizar();
+        }
     }
 
     function apagarSecao(id) {
         if (confirm("Apagar esta divisória? As tarefas dessa área serão movidas para a Seção Geral.")) {
             secoes = secoes.filter(s => s.id !== id);
+            ordemSecoes = ordemSecoes.filter(sId => sId !== id);
             tarefas = tarefas.map(t => t.secaoId === id ? { ...t, secaoId: null } : t);
-            salvarDados();
+            salvarProjetoAtual();
             renderizar();
         }
     }
@@ -622,7 +1128,6 @@
         const inputTitulo = document.getElementById("input-titulo");
         const inputObs = document.getElementById("input-obs");
         const selectSecao = document.getElementById("select-secao-add");
-        
         const titulo = inputTitulo.value.trim();
         const obs = inputObs.value.trim();
         const secaoId = Number(selectSecao.value) || null;
@@ -633,7 +1138,6 @@
         }
 
         const maiorId = tarefas.reduce((max, t) => t.id > max ? t.id : max, 0);
-        
         const novaTarefa = {
             id: maiorId + 1,
             tarefa: titulo,
@@ -643,7 +1147,7 @@
         };
 
         tarefas.unshift(novaTarefa);
-        salvarDados();
+        salvarProjetoAtual();
 
         inputTitulo.value = "";
         inputObs.value = "";
@@ -657,14 +1161,14 @@
             if (t.id === id) t.status = t.status === "Pendente" ? "Pronto" : "Pendente";
             return t;
         });
-        salvarDados();
+        salvarProjetoAtual();
         renderizar();
     }
 
     function apagarTarefa(id) {
         if (confirm("Deseja apagar esta tarefa?")) {
             tarefas = tarefas.filter(t => t.id !== id);
-            salvarDados();
+            salvarProjetoAtual();
             renderizar();
         }
     }
@@ -674,19 +1178,39 @@
             if (t.id === id) t[campo] = novoValor.trim();
             return t;
         });
-        salvarDados();
+        salvarProjetoAtual();
     }
 
-    function atualizarSelectSecoes() {
-        const select = document.getElementById("select-secao-add");
-        const valorAtual = select.value;
-        
-        select.innerHTML = `<option value="0">📌 Geral / Sem Divisória</option>`;
-        secoes.forEach(s => {
-            select.innerHTML += `<option value="${s.id}">📂 ${s.nome}</option>`;
-        });
+    function criarHeaderSecaoPendente(secaoId, nomeSecao) {
+        const wrapper = document.createElement("div");
+        wrapper.className = "secao-header-wrapper";
+        wrapper.dataset.secaoId = secaoId;
 
-        select.value = valorAtual || "0";
+        const handle = document.createElement("div");
+        handle.className = "drag-handle-secao";
+        handle.title = "Arraste para reordenar esta divisória";
+        handle.innerHTML = `
+            <svg width="14" height="14" viewBox="0 0 16 16" fill="currentColor">
+                <path d="M5 3a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0zm0 5a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0zm-1.5 6.5a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3zM12.5 4.5a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3zm0 5a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3zm0 5a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3z"/>
+            </svg>
+        `;
+
+        const li = document.createElement("li");
+        li.className = "secao-header-item";
+        li.dataset.secaoId = secaoId;
+
+        if (secaoId === 0) {
+            li.innerHTML = `<span>📌 ${nomeSecao}</span>`;
+        } else {
+            li.innerHTML = `
+                <span> <span class="secao-titulo" contenteditable="true" onblur="renomearSecao(${secaoId}, this.textContent)">${nomeSecao}</span></span>
+                <button class="btn-apagar-secao" onclick="apagarSecao(${secaoId})" title="Excluir Divisória">✕ Remover</button>
+            `;
+        }
+
+        wrapper.appendChild(handle);
+        wrapper.appendChild(li);
+        return wrapper;
     }
 
     function renderizar() {
@@ -704,83 +1228,71 @@
         document.getElementById("contador-concluidas").textContent = `(${concluidas.length})`;
         document.getElementById("contador-pendentes").textContent = `(${pendentes.length})`;
 
-        // --- 1. RENDERIZAR CONCLUÍDAS AGRUPADAS ---
-        const concluidasGerais = concluidas.filter(t => !t.secaoId || !secoes.some(s => s.id === t.secaoId));
-        if (concluidasGerais.length > 0) {
-            const headerGeral = document.createElement("li");
-            headerGeral.className = "secao-header-item";
-            headerGeral.innerHTML = `<span>📌 Geral / Sem Divisória</span>`;
-            listaConcluidas.appendChild(headerGeral);
+        // --- TAREFAS CONCLUÍDAS ---
+        if (concluidas.length === 0) {
+            listaConcluidas.innerHTML = `<div class="vazio">Nenhuma tarefa concluída no momento.</div>`;
+        } else {
+            const concluidasGerais = concluidas.filter(t => !t.secaoId || !secoes.some(s => s.id === t.secaoId));
+            if (concluidasGerais.length > 0) {
+                const headerGeral = document.createElement("li");
+                headerGeral.className = "secao-header-item secao-header-concluida";
+                headerGeral.innerHTML = `<span>📌 Geral / Sem Divisória</span>`;
+                listaConcluidas.appendChild(headerGeral);
 
-            concluidasGerais.forEach(t => {
-                listaConcluidas.appendChild(criarElementoTarefa(t, true, null));
-            });
-        }
-
-        secoes.forEach(secao => {
-            const concluidasDaSecao = concluidas.filter(t => t.secaoId === secao.id);
-            if (concluidasDaSecao.length > 0) {
-                const headerSecao = document.createElement("li");
-                headerSecao.className = "secao-header-item";
-                headerSecao.innerHTML = `
-                    <span>📂 <span class="secao-titulo" contenteditable="true" onblur="renomearSecao(${secao.id}, this.textContent)">${secao.nome}</span></span>
-                    <button class="btn-apagar-secao" onclick="apagarSecao(${secao.id})" title="Excluir Divisória">✕ Remover</button>
-                `;
-                listaConcluidas.appendChild(headerSecao);
-
-                concluidasDaSecao.forEach(t => {
+                concluidasGerais.forEach(t => {
                     listaConcluidas.appendChild(criarElementoTarefa(t, true, null));
                 });
             }
-        });
 
-        if (listaConcluidas.children.length === 0) {
-            listaConcluidas.innerHTML = `<div class="vazio">Nenhuma tarefa concluída no momento.</div>`;
-        }
+            secoes.forEach(secao => {
+                const concluidasDaSecao = concluidas.filter(t => t.secaoId === secao.id);
+                if (concluidasDaSecao.length > 0) {
+                    const headerSecao = document.createElement("li");
+                    headerSecao.className = "secao-header-item secao-header-concluida";
+                    headerSecao.innerHTML = `
+                        <span>📂 <span class="secao-titulo" contenteditable="true" onblur="renomearSecao(${secao.id}, this.textContent)">${secao.nome}</span></span>
+                        <button class="btn-apagar-secao" onclick="apagarSecao(${secao.id})" title="Excluir Divisória">✕ Remover</button>
+                    `;
+                    listaConcluidas.appendChild(headerSecao);
 
-        // --- 2. RENDERIZAR PENDENTES COM CONTAGEM POR DIVISÓRIA ---
-        const pendentesGerais = pendentes.filter(t => !t.secaoId || !secoes.some(s => s.id === t.secaoId));
-        if (pendentesGerais.length > 0) {
-            const headerGeral = document.createElement("li");
-            headerGeral.className = "secao-header-item";
-            headerGeral.dataset.secaoId = "0";
-            headerGeral.innerHTML = `<span>📌 Geral / Sem Divisória</span>`;
-            listaPendentes.appendChild(headerGeral);
-
-            let contadorGeral = 1;
-            pendentesGerais.forEach(t => {
-                listaPendentes.appendChild(criarElementoTarefa(t, false, contadorGeral++));
+                    concluidasDaSecao.forEach(t => {
+                        listaConcluidas.appendChild(criarElementoTarefa(t, true, null));
+                    });
+                }
             });
         }
 
-        secoes.forEach(secao => {
-            const pendentesDaSecao = pendentes.filter(t => t.secaoId === secao.id);
-            const totalNaSecao = tarefas.filter(t => t.secaoId === secao.id);
-
-            // Exibe nos pendentes apenas se houver tarefas pendentes NELA ou se for uma divisória recém-criada sem nenhuma tarefa.
-            // Se todas as tarefas forem concluídas, o cabeçalho dos pendentes é ocultado.
-            const deveExibirNosPendentes = pendentesDaSecao.length > 0 || totalNaSecao.length === 0;
-
-            if (deveExibirNosPendentes) {
-                const headerSecao = document.createElement("li");
-                headerSecao.className = "secao-header-item";
-                headerSecao.dataset.secaoId = secao.id;
-                headerSecao.innerHTML = `
-                    <span>📂 <span class="secao-titulo" contenteditable="true" onblur="renomearSecao(${secao.id}, this.textContent)">${secao.nome}</span></span>
-                    <button class="btn-apagar-secao" onclick="apagarSecao(${secao.id})" title="Excluir Divisória">✕ Remover</button>
-                `;
-                listaPendentes.appendChild(headerSecao);
-
-                let contadorSecao = 1;
-                pendentesDaSecao.forEach(t => {
-                    listaPendentes.appendChild(criarElementoTarefa(t, false, contadorSecao++));
-                });
-            }
+        // --- TAREFAS PENDENTES ---
+        const idsSecoesExistentes = [0, ...secoes.map(s => s.id)];
+        ordemSecoes = ordemSecoes.filter(id => idsSecoesExistentes.includes(id));
+        idsSecoesExistentes.forEach(id => {
+            if (!ordemSecoes.includes(id)) ordemSecoes.push(id);
         });
 
-        if (listaPendentes.children.length === 0) {
-            listaPendentes.innerHTML = `<div class="vazio">Todas as tarefas foram concluídas!</div>`;
-        }
+        ordemSecoes.forEach(secaoId => {
+            if (secaoId === 0) {
+                const pendentesGerais = pendentes.filter(t => !t.secaoId || !secoes.some(s => s.id === t.secaoId));
+                const wrapper = criarHeaderSecaoPendente(0, "Geral / Sem Divisória");
+                listaPendentes.appendChild(wrapper);
+
+                let contadorGeral = 1;
+                pendentesGerais.forEach(t => {
+                    listaPendentes.appendChild(criarElementoTarefa(t, false, contadorGeral++));
+                });
+            } else {
+                const secaoObj = secoes.find(s => s.id === secaoId);
+                if (secaoObj) {
+                    const tarefasDaSecao = pendentes.filter(t => t.secaoId === secaoObj.id);
+                    const wrapper = criarHeaderSecaoPendente(secaoObj.id, secaoObj.nome);
+                    listaPendentes.appendChild(wrapper);
+
+                    let contadorSecao = 1;
+                    tarefasDaSecao.forEach(t => {
+                        listaPendentes.appendChild(criarElementoTarefa(t, false, contadorSecao++));
+                    });
+                }
+            }
+        });
     }
 
     function criarElementoTarefa(t, isConcluida, numeroExibicao) {
@@ -790,7 +1302,7 @@
 
         li.innerHTML = `
             <div class="tarefa-info">
-                ${!isConcluida ? `<span class="drag-handle" title="Arraste para reordenar ou mover de divisória">☰</span><span class="badge-numero">${numeroExibicao}</span>` : ''}
+                ${!isConcluida ? `<span class="drag-handle" title="Arraste para reordenar esta tarefa">☰</span><span class="badge-numero">${numeroExibicao}</span>` : ''}
                 <input type="checkbox" ${isConcluida ? 'checked' : ''} onclick="alternarStatus(${t.id})" title="Marcar como concluída/pendente">
                 <div class="tarefa-detalhes">
                     <span class="tarefa-titulo" contenteditable="true" onblur="atualizarTexto(${t.id}, 'tarefa', this.textContent)">${t.tarefa}</span>
@@ -804,62 +1316,117 @@
         return li;
     }
 
-    function sincronizarOrdemEAtribuicoes() {
+    // ---- Sincronização após arrasto ----
+    function sincronizarAposArrasto(tipoArrasto) {
         const listaPendentes = document.getElementById("lista-pendentes");
         const elementos = [...listaPendentes.children];
-        
-        let secaoAtualId = null;
-        const novasTarefasPendentes = [];
 
-        elementos.forEach(el => {
-            if (el.classList.contains("secao-header-item")) {
-                const idSecao = Number(el.dataset.secaoId);
-                secaoAtualId = idSecao === 0 ? null : idSecao;
-            } else if (el.classList.contains("tarefa-item")) {
-                const idTarefa = Number(el.dataset.id);
-                const tarefaObj = tarefas.find(t => t.id === idTarefa);
-                if (tarefaObj) {
-                    tarefaObj.secaoId = secaoAtualId;
-                    novasTarefasPendentes.push(tarefaObj);
+        if (tipoArrasto === 'secao') {
+            const novaOrdemSecoes = [];
+            elementos.forEach(el => {
+                if (el.classList.contains("secao-header-wrapper")) {
+                    const idSecao = Number(el.dataset.secaoId);
+                    if (!novaOrdemSecoes.includes(idSecao)) {
+                        novaOrdemSecoes.push(idSecao);
+                    }
                 }
+            });
+            if (novaOrdemSecoes.length > 0) {
+                ordemSecoes = novaOrdemSecoes;
             }
-        });
+        } else if (tipoArrasto === 'tarefa') {
+            let secaoAtualId = null;
+            const novasTarefasPendentes = [];
 
-        const concluidas = tarefas.filter(item => item.status === "Pronto");
-        tarefas = [...novasTarefasPendentes, ...concluidas];
-        salvarDados();
+            elementos.forEach(el => {
+                if (el.classList.contains("secao-header-wrapper")) {
+                    const idSecao = Number(el.dataset.secaoId);
+                    secaoAtualId = idSecao === 0 ? null : idSecao;
+                } else if (el.classList.contains("tarefa-item")) {
+                    const idTarefa = Number(el.dataset.id);
+                    const tarefaObj = tarefas.find(t => t.id === idTarefa);
+                    if (tarefaObj) {
+                        tarefaObj.secaoId = secaoAtualId;
+                        novasTarefasPendentes.push(tarefaObj);
+                    }
+                }
+            });
+
+            const concluidas = tarefas.filter(item => item.status === "Pronto");
+            tarefas = [...novasTarefasPendentes, ...concluidas];
+        }
+
+        salvarProjetoAtual();
+        renderizar();
     }
 
+    // ---- Arrasto motorizado ----
     function inicializarArrastoMotorizado() {
         const lista = document.getElementById("lista-pendentes");
         
         let arrastando = null;
         let placeholder = null;
+        let tipoArrasto = null; 
         let startY = 0;
         let startTop = 0;
+
+        let lastClientX = 0;
+        let lastClientY = 0;
+        let scrollSpeed = 0;
+        let animFrameId = null;
 
         lista.addEventListener('mousedown', iniciarArrasto);
         lista.addEventListener('touchstart', iniciarArrasto, { passive: false });
 
+        function autoScrollLoop() {
+            if (scrollSpeed !== 0 && arrastando) {
+                window.scrollBy(0, scrollSpeed);
+                atualizarPosicaoEPlaceholder(lastClientX, lastClientY);
+            }
+            if (arrastando) {
+                animFrameId = requestAnimationFrame(autoScrollLoop);
+            }
+        }
+
         function iniciarArrasto(e) {
-            const handle = e.target.closest('.drag-handle');
-            if (!handle) return;
+            const handleTarefa = e.target.closest('.drag-handle');
+            const handleSecao = e.target.closest('.drag-handle-secao');
             
-            arrastando = handle.closest('.tarefa-item');
+            if (!handleTarefa && !handleSecao) return;
+            
+            if (handleTarefa) {
+                tipoArrasto = 'tarefa';
+                arrastando = handleTarefa.closest('.tarefa-item');
+            } else if (handleSecao) {
+                tipoArrasto = 'secao';
+                arrastando = handleSecao.closest('.secao-header-wrapper');
+            }
+
             if (!arrastando) return;
 
             e.preventDefault(); 
             
             const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+            const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+            
+            lastClientX = clientX;
+            lastClientY = clientY;
+
             const rect = arrastando.getBoundingClientRect();
             
             startY = clientY;
             startTop = rect.top;
 
-            placeholder = document.createElement('li');
-            placeholder.className = 'tarefa-item placeholder';
-            placeholder.style.height = `${rect.height}px`;
-            
+            if (tipoArrasto === 'tarefa') {
+                placeholder = document.createElement('li');
+                placeholder.className = 'tarefa-item placeholder';
+                placeholder.style.height = `${rect.height}px`;
+            } else {
+                placeholder = document.createElement('div');
+                placeholder.className = 'secao-header-wrapper placeholder-secao';
+                placeholder.style.height = `${rect.height}px`;
+            }
+
             arrastando.parentNode.insertBefore(placeholder, arrastando.nextSibling);
 
             arrastando.style.position = 'fixed';
@@ -877,34 +1444,81 @@
             document.addEventListener('touchmove', moverArrasto, { passive: false });
             document.addEventListener('mouseup', soltarArrasto);
             document.addEventListener('touchend', soltarArrasto);
+
+            animFrameId = requestAnimationFrame(autoScrollLoop);
         }
 
         function moverArrasto(e) {
             if (!arrastando) return;
-            e.preventDefault(); 
+            if (e.cancelable) e.preventDefault();
 
             const clientY = e.touches ? e.touches[0].clientY : e.clientY;
             const clientX = e.touches ? e.touches[0].clientX : e.clientX;
 
+            lastClientX = clientX;
+            lastClientY = clientY;
+
             const deltaY = clientY - startY;
-            arrastando.style.transform = `translateY(${deltaY}px)`;
+            arrastando.style.top = `${startTop + deltaY}px`;
 
-            const alvo = document.elementFromPoint(clientX, clientY);
-            if (!alvo) return;
+            const margin = 60;
+            const windowHeight = window.innerHeight;
+            
+            if (clientY < margin) {
+                scrollSpeed = -Math.min(15, (margin - clientY) / 2);
+            } else if (clientY > windowHeight - margin) {
+                scrollSpeed = Math.min(15, (clientY - (windowHeight - margin)) / 2);
+            } else {
+                scrollSpeed = 0;
+            }
 
-            const itemSobMouse = alvo.closest('.tarefa-item:not(.dragging):not(.placeholder), .secao-header-item');
-            if (itemSobMouse && itemSobMouse.parentNode === lista) {
-                const rectAlvo = itemSobMouse.getBoundingClientRect();
-                const meioY = rectAlvo.top + rectAlvo.height / 2;
+            atualizarPosicaoEPlaceholder(clientX, clientY);
+        }
 
-                if (clientY < meioY) {
-                    if (placeholder.nextSibling !== itemSobMouse) {
-                        lista.insertBefore(placeholder, itemSobMouse);
+        function atualizarPosicaoEPlaceholder(clientX, clientY) {
+            if (!arrastando || !placeholder) return;
+
+            if (tipoArrasto === 'tarefa') {
+                const elementos = [...lista.querySelectorAll('.tarefa-item:not(.dragging):not(.placeholder), .secao-header-wrapper')];
+                let elementoProximo = null;
+                let menorDistancia = Infinity;
+
+                elementos.forEach(el => {
+                    const box = el.getBoundingClientRect();
+                    const meio = box.top + box.height / 2;
+                    const distancia = clientY - meio;
+
+                    if (distancia < 0 && Math.abs(distancia) < menorDistancia) {
+                        menorDistancia = Math.abs(distancia);
+                        elementoProximo = el;
                     }
+                });
+
+                if (elementoProximo) {
+                    lista.insertBefore(placeholder, elementoProximo);
                 } else {
-                    if (placeholder.previousSibling !== itemSobMouse) {
-                        lista.insertBefore(placeholder, itemSobMouse.nextSibling);
+                    lista.appendChild(placeholder);
+                }
+            } else if (tipoArrasto === 'secao') {
+                const wrappers = [...lista.querySelectorAll('.secao-header-wrapper:not(.dragging):not(.placeholder-secao)')];
+                let wrapperProximo = null;
+                let menorDistancia = Infinity;
+
+                wrappers.forEach(el => {
+                    const box = el.getBoundingClientRect();
+                    const meio = box.top + box.height / 2;
+                    const distancia = clientY - meio;
+
+                    if (distancia < 0 && Math.abs(distancia) < menorDistancia) {
+                        menorDistancia = Math.abs(distancia);
+                        wrapperProximo = el;
                     }
+                });
+
+                if (wrapperProximo) {
+                    lista.insertBefore(placeholder, wrapperProximo);
+                } else {
+                    lista.appendChild(placeholder);
                 }
             }
         }
@@ -912,28 +1526,44 @@
         function soltarArrasto() {
             if (!arrastando) return;
 
-            lista.insertBefore(arrastando, placeholder);
-            
-            arrastando.style = ''; 
+            scrollSpeed = 0;
+            if (animFrameId) cancelAnimationFrame(animFrameId);
+
+            const tipoAtual = tipoArrasto;
+
+            if (placeholder && placeholder.parentNode) {
+                placeholder.parentNode.insertBefore(arrastando, placeholder);
+                placeholder.remove();
+            }
+
+            arrastando.style.position = '';
+            arrastando.style.margin = '';
+            arrastando.style.zIndex = '';
+            arrastando.style.width = '';
+            arrastando.style.top = '';
+            arrastando.style.left = '';
+            arrastando.style.pointerEvents = '';
+            arrastando.style.transition = '';
+            arrastando.style.transform = '';
             arrastando.classList.remove('dragging');
-            
-            placeholder.remove();
-            
+
             arrastando = null;
             placeholder = null;
+            tipoArrasto = null;
 
             document.removeEventListener('mousemove', moverArrasto);
             document.removeEventListener('touchmove', moverArrasto);
             document.removeEventListener('mouseup', soltarArrasto);
             document.removeEventListener('touchend', soltarArrasto);
 
-            sincronizarOrdemEAtribuicoes();
-            renderizar();
+            sincronizarAposArrasto(tipoAtual);
         }
     }
 
-    renderizar();
-    inicializarArrastoMotorizado(); 
+    // ======================================================================
+    //  INICIALIZAÇÃO
+    // ======================================================================
+    inicializar();
 </script>
 
 </body>
