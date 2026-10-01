@@ -2,17 +2,7 @@
     //  GERENCIAMENTO DE PROJETOS
     // ======================================================================
 
-    // Dados iniciais para o projeto padrão
-    const TAREFAS_INICIAIS = [
-        { id: 1, tarefa: "Header Global (Botão Voltar + Ferramentas)", obs: "Index.html ainda não atualizado!", status: "Pendente", secaoId: 1 },
-        { id: 2, tarefa: "Layout do Caderno (Tela 3)", obs: "HTML base criado, ajustar CSS flex.", status: "Pendente", secaoId: 1 },
-        { id: 3, tarefa: "Lógica do Caderno (caderno.js)", obs: "Integração dos eventos do header.", status: "Pendente", secaoId: 1 },
-        { id: 4, tarefa: "Ferramentas do Header", obs: "Adicionar classe modo-caderno no body.", status: "Pendente", secaoId: 1 },
-        { id: 5, tarefa: "Vídeo para SVG em Loop", obs: "Substituir vídeo por SVG animado.", status: "Pendente", secaoId: 2 },
-        { id: 6, tarefa: "Canvas Infinito (Pan & Zoom)", obs: "Implementar deslocamento e pan visual.", status: "Pendente", secaoId: 2 },
-        { id: 12, tarefa: "Dashboard (Tela 1)", obs: "Grid 2x2, capas em SVG.", status: "Pronto", secaoId: null },
-        { id: 13, tarefa: "Transição de Ida", obs: "Efeito zoom out.", status: "Pronto", secaoId: null }
-    ];
+
 
     const SECOES_INICIAIS = [
         { id: 1, nome: "Módulo 1: Layout & Core" },
