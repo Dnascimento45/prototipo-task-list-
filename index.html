@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Task List - Múltiplos Projetos</title>
+    <title>Task List</title>
     <link rel="stylesheet" href="style.css" >
    
   
@@ -14,8 +14,14 @@
 
     <!-- ABAS DE PROJETOS -->
     <div class="abas-wrapper" id="abas-wrapper">
+        <div class="aba-item ativo" data-id="projeto_1790872835544">
+            <span class="nome-aba" contenteditable="true" title="Clique para editar o nome">Meu Projeto</span>
+            <button class="btn-editar-aba" title="Renomear projeto (clique no nome)">✎</button>
+            <button class="btn-fechar-aba" title="Excluir projeto">✕</button>
+        </div>
         <!-- as abas serão inseridas aqui via JS -->
         <button class="btn-nova-aba" id="btnNovaAba" title="Criar novo projeto">+</button>
+
     </div>
 
     <header>
@@ -23,7 +29,7 @@
             📋
             <span id="nome-projeto-atual" class="nome-projeto-editavel" contenteditable="true">Task List</span>
         </h1>
-        <p>Gerencie múltiplos projetos — cada aba é um arquivo JSON separado</p>
+     
     </header>
 
     <div class="sync-bar">
@@ -49,7 +55,9 @@
         <div id="painel-divisoria" class="painel-divisoria">
             <h4>📂 Criar Nova Divisória</h4>
             <div class="form-group" style="margin-bottom: 0;">
-                <input type="text" id="input-nome-divisoria" placeholder="Nome da divisória (ex: Módulo 3 - Testes)..." onkeydown="tratarTeclasDivisoria(event)">
+                <input type="text" id="input-nome-divisoria" placeholder="Nome da divisória (ex: Módulo 3 - Testes)..."
+                 onkeydown="tratarTeclasDivisoria(event)">
+
                 <button class="btn-adicionar" onclick="confirmarCriarDivisoria()">Criar Divisória</button>
                 <button class="btn-secundario" onclick="alternarPainelDivisoria(false)">Cancelar</button>
             </div>

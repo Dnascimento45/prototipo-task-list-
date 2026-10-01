@@ -1,25 +1,81 @@
+/* ==========================================================================
+   ÍNDICE DO ARQUIVO (style.css)
+   ==========================================================================
+   Este arquivo segue a ordem em que as coisas aparecem na tela, de cima
+   para baixo. Use Ctrl+F no número da seção para pular até ela.
 
-:root {
+   SEÇÃO 1  - Variáveis globais (:root) ......... as cores do site
+   SEÇÃO 2  - Base da página .................... body e container
+   SEÇÃO 3  - Abas de projetos .................. abas no topo
+   SEÇÃO 4  - Cabeçalho ......................... título e subtítulo
+   SEÇÃO 5  - Barra de sincronização ............ Exportar / Importar
+   SEÇÃO 6  - Card de adicionar tarefa .......... formulário e botões
+   SEÇÃO 7  - Painel 'Criar nova divisória' ..... a janelinha que abre
+   SEÇÃO 8  - Divisórias principais ............. Concluídas e Pendentes
+   SEÇÃO 9  - Seções dentro da lista ............ subdivisórias arrastáveis
+   SEÇÃO 10 - Tarefas ........................... cada item da lista
+
+   ETIQUETAS usadas nos comentários (busque com Ctrl+F):
+   [HOVER]      efeito quando o mouse passa por cima
+   [FOCO]       efeito quando o campo está selecionado / sendo digitado
+   [ATIVO]      efeito no instante em que o botão do mouse está apertado
+   [ESTADO]     variação de aparência (concluída, aba ativa, painel aberto)
+   [TRANSIÇÃO]  mudança suave de um estilo para outro (animação curta)
+   [ANIMAÇÃO]   animação criada com @keyframes
+   [ARRASTAR]   estilos de arrastar e soltar (drag and drop)
+   [AVISO]      algo que merece atenção
+
+   IMPORTANTE: em CSS a ORDEM das regras importa. Por isso a ordem do
+   código não foi alterada: só foram adicionados comentários.
+   ========================================================================== */
+
+
+
+/* ==========================================================================
+   SEÇÃO 1 — VARIÁVEIS GLOBAIS (:root)
+   ==========================================================================
+   O que faz: guarda as cores do site em variáveis (as que começam com --).
+   Em vez de escrever o código da cor em vários lugares, o resto do arquivo
+   usa var(--nome).
+   Por que importa: mudou a cor aqui, mudou no site inteiro.
+   ========================================================================== */
+
+   :root {
+    /* [CORES] Fundos e textos gerais da página. */
     --bg-color: #0d1117;
     --card-bg: #161b22;
     --text-main: #f0f6fc;
     --text-muted: #8b949e;
     --border-color: #30363d;
+    /* [CORES] Azul de destaque (botões principais, foco, bordas ativas). */
     --primary: #388bfd;
     --primary-hover: #1f6feb;
+    /* [CORES] Verde = concluído. */
     --success-bg: rgba(46, 160, 67, 0.15);
     --success-border: #2ea043;
     --success-text: #3fb950;
+    /* [CORES] Amarelo = pendente. */
     --pending-bg: rgba(187, 128, 9, 0.15);
     --pending-border: #bb8009;
     --pending-text: #e3b341;
+    /* [CORES] Vermelho = apagar / perigo. */
     --danger: #f85149;
     --danger-hover: #da3633;
+    /* [CORES] Cinzas das seções (subdivisórias). */
     --secao-bg: #21262d;
     --secao-border: #484f58;
+    /* [CORES] Cores das abas (normal e ativa). */
     --aba-bg: #161b22;
     --aba-active: #21262d;
 }
+
+
+/* ==========================================================================
+   SEÇÃO 2 — BASE DA PÁGINA (body e container)
+   ==========================================================================
+   O que faz: define o que vale para a página toda: fonte, cor de fundo,
+   cor do texto e a caixa central que limita a largura do conteúdo.
+   ========================================================================== */
 
 body {
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -29,12 +85,24 @@ body {
     padding: 30px;
 }
 
+/* [BASE] Caixa central: limita a largura e centraliza o conteúdo
+   (margin: 0 auto). */
 .container {
     max-width: 900px;
     margin: 0 auto;
 }
 
+
+/* ==========================================================================
+   SEÇÃO 3 — ABAS DE PROJETOS
+   ==========================================================================
+   O que faz: estiliza a faixa de abas no topo (uma aba por projeto), os
+   botões de editar/fechar cada aba, o botão + e o nome editável da aba.
+   Aqui tem bastante [HOVER] e [TRANSIÇÃO].
+   ========================================================================== */
+
 /* ----- ABAS / PROJETOS ----- */
+/* [ABAS] A faixa que envolve todas as abas (a barra por trás delas). */
 .abas-wrapper {
     background: var(--card-bg);
     border-radius: 10px 10px 0 0;
@@ -47,6 +115,8 @@ body {
     gap: 6px;
 }
 
+/* [ABAS] Cada aba, no estado normal. [TRANSIÇÃO] a linha 'transition'
+   faz fundo, cor e borda mudarem suavemente em vez de dar um pulo. */
 .aba-item {
     display: inline-flex;
     align-items: center;
@@ -65,11 +135,13 @@ body {
     position: relative;
 }
 
+/* [HOVER] Aba com o mouse por cima. */
 .aba-item:hover {
     background: var(--aba-active);
     color: var(--text-main);
 }
 
+/* [ESTADO] Aba selecionada no momento (o JS coloca a classe 'ativo'). */
 .aba-item.ativo {
     background: var(--aba-active);
     color: var(--text-main);
@@ -77,9 +149,25 @@ body {
     border-bottom-color: var(--aba-active);
 }
 
-.aba-item .btn-fechar-aba
+/* [AVISO] Regra VAZIA: o botão de fechar aba não tem estilo próprio
+   (fica com a aparência padrão do navegador). Só ganha estilo nas regras
+   de hover mais abaixo. */
+.aba-item .btn-fechar-aba{   background: transparent;
+    border: none;
+    color: var(--text-muted);
+    font-size: 13px;
+    line-height: 1;
+    cursor: pointer;
+    padding: 0 4px;
+    border-radius: 4px;
+    transition: background 0.2s, color 0.2s, opacity 0.2s;
+    opacity: 0;
+    
+}
 
 
+/* [ABAS] Botão de editar a aba. Começa invisível (opacity: 0).
+   [TRANSIÇÃO] aparece suavemente. */
 .aba-item .btn-editar-aba {
     background: transparent;
     border: none;
@@ -93,21 +181,27 @@ body {
     opacity: 0;
 }
 
+/* [HOVER] Ao passar o mouse na ABA, os botões dela aparecem (opacity:
+   1). */
 .aba-item:hover .btn-editar-aba,
 .aba-item:hover .btn-fechar-aba {
     opacity: 1;
 }
 
+/* [HOVER] Mouse em cima do botão de editar (fica azul). */
 .aba-item .btn-editar-aba:hover {
     background: var(--primary);
-    color: white;
+
 }
 
+/* [HOVER] Mouse em cima do botão de fechar (fica vermelho). */
 .aba-item .btn-fechar-aba:hover {
     background: var(--danger);
     color: white;
 }
 
+/* [ABAS] Botão + que cria uma nova aba. margin-left: auto empurra ele
+   para a direita. [TRANSIÇÃO] na cor e na borda. */
 .btn-nova-aba {
     background: transparent;
     border: 1px dashed var(--border-color);
@@ -121,11 +215,14 @@ body {
     margin-left: auto;
 }
 
+/* [HOVER] Botão + com o mouse por cima. */
 .btn-nova-aba:hover {
     border-color: var(--primary);
     color: var(--primary);
 }
 
+/* [ABAS] Texto do nome da aba, estilizado para parecer texto normal (sem
+   borda e sem fundo). */
 .aba-item .nome-aba {
     outline: none;
     border: none;
@@ -138,18 +235,30 @@ body {
     cursor: text;
 }
 
+/* [FOCO] Nome da aba selecionado para edição: ganha contorno azul. */
 .aba-item .nome-aba:focus {
     outline: 1px solid var(--primary);
     border-radius: 4px;
     background: #0d1117;
 }
 
+
+/* ==========================================================================
+   SEÇÃO 4 — CABEÇALHO DA PÁGINA
+   ==========================================================================
+   O que faz: título 'Task List' (com o nome do projeto editável) e o texto
+   cinza logo abaixo dele.
+   ========================================================================== */
+
 /* ----- HEADER ----- */
+/* [CABEÇALHO] Espaçamento e texto centralizado. */
 header {
     margin: 12px 0 20px 0;
     text-align: center;
 }
 
+/* [CABEÇALHO] Título principal. display: flex deixa o emoji e o nome
+   lado a lado. */
 header h1 {
     color: var(--text-main);
     margin-bottom: 4px;
@@ -160,6 +269,8 @@ header h1 {
     gap: 8px;
 }
 
+/* [CABEÇALHO] Nome do projeto atual, editável direto na tela, com cara
+   de texto comum. */
 header h1 .nome-projeto-editavel {
     outline: none;
     border: none;
@@ -173,16 +284,25 @@ header h1 .nome-projeto-editavel {
     cursor: text;
 }
 
+/* [FOCO] Nome do projeto sendo editado. */
 header h1 .nome-projeto-editavel:focus {
     outline: 1px solid var(--primary);
     background: #0d1117;
 }
 
+/* [CABEÇALHO] Subtítulo (texto cinza embaixo do título). */
 header p {
     color: var(--text-muted);
     font-size: 14px;
     margin: 0;
 }
+
+
+/* ==========================================================================
+   SEÇÃO 5 — BARRA DE SINCRONIZAÇÃO
+   ==========================================================================
+   O que faz: a linha com os botões Exportar Projeto e Importar Projeto.
+   ========================================================================== */
 
 .sync-bar {
     display: flex;
@@ -191,6 +311,8 @@ header p {
     margin-bottom: 20px;
 }
 
+/* [BOTÃO] Botões Exportar/Importar. [TRANSIÇÃO] 'transition: all' faz
+   TODAS as propriedades que mudarem ficarem suaves. */
 .btn-sync {
     background-color: var(--card-bg);
     color: var(--text-main);
@@ -206,10 +328,19 @@ header p {
     gap: 6px;
 }
 
+/* [HOVER] Botão de sincronizar com o mouse por cima. */
 .btn-sync:hover {
     border-color: var(--primary);
     background-color: #1f242c;
 }
+
+
+/* ==========================================================================
+   SEÇÃO 6 — CARD 'ADICIONAR NOVA TAREFA OU NOTA'
+   ==========================================================================
+   O que faz: a caixa do formulário: campos de texto, o select de divisória
+   e os botões Adicionar Tarefa e Nova Divisória.
+   ========================================================================== */
 
 .card-adicionar {
     background: var(--card-bg);
@@ -220,6 +351,7 @@ header p {
     border: 1px solid var(--border-color);
 }
 
+/* [CARD] Título do card. */
 .card-adicionar h3 {
     margin-top: 0;
     margin-bottom: 15px;
@@ -227,6 +359,8 @@ header p {
     color: var(--text-main);
 }
 
+/* [CARD] Uma linha do formulário: campos e botões lado a lado. flex-wrap
+   deixa quebrar de linha em telas pequenas. */
 .form-group {
     display: flex;
     gap: 10px;
@@ -234,6 +368,8 @@ header p {
     flex-wrap: wrap;
 }
 
+/* [CARD] Aparência comum dos campos de texto e do select (lista de
+   opções). [TRANSIÇÃO] na cor da borda. */
 .form-group input, .form-group select {
     padding: 10px 14px;
     background-color: #0d1117;
@@ -245,13 +381,18 @@ header p {
     transition: border-color 0.2s;
 }
 
+/* [CARD] Larguras: o input cresce para ocupar o espaço livre; o select
+   fica com largura limitada. */
 .form-group input { flex: 1; min-width: 150px; }
 .form-group select { flex: 0 1 200px; cursor: pointer; }
 
+/* [FOCO] Campo selecionado: borda azul. */
 .form-group input:focus, .form-group select:focus {
     border-color: var(--primary);
 }
 
+/* [BOTÃO] Botão principal (azul, chama mais atenção). [TRANSIÇÃO] na cor
+   de fundo. */
 .btn-adicionar {
     background-color: var(--primary);
     color: white;
@@ -265,10 +406,13 @@ header p {
     white-space: nowrap;
 }
 
+/* [HOVER] Botão principal com o mouse por cima (azul mais escuro). */
 .btn-adicionar:hover {
     background-color: var(--primary-hover);
 }
 
+/* [BOTÃO] Botão secundário (só contorno, menos destaque). [TRANSIÇÃO] em
+   todas as propriedades. */
 .btn-secundario {
     background-color: transparent;
     color: var(--text-main);
@@ -282,10 +426,19 @@ header p {
     white-space: nowrap;
 }
 
+/* [HOVER] Botão secundário com o mouse por cima. */
 .btn-secundario:hover {
     border-color: var(--primary);
     background-color: #1f242c;
 }
+
+
+/* ==========================================================================
+   SEÇÃO 7 — PAINEL 'CRIAR NOVA DIVISÓRIA' (a janelinha)
+   ==========================================================================
+   O que faz: a janela que fica escondida dentro do card e aparece quando
+   se clica em Nova Divisória. Tem a [ANIMAÇÃO] de entrada (fadeIn).
+   ========================================================================== */
 
 .painel-divisoria {
     display: none;
@@ -297,20 +450,36 @@ header p {
     animation: fadeIn 0.2s ease-in-out;
 }
 
+/* [ESTADO] O JS adiciona a classe 'ativo' e o painel passa a aparecer
+   (display: block). */
 .painel-divisoria.ativo {
     display: block;
 }
 
+/* [PAINEL] Título do painel. */
 .painel-divisoria h4 {
     margin: 0 0 10px 0;
     font-size: 14px;
     color: #58a6ff;
 }
 
+/* [ANIMAÇÃO] Define a animação 'fadeIn': começa transparente e um pouco
+   acima, termina normal. Ela é chamada pela linha 'animation' do
+   .painel-divisoria. */
 @keyframes fadeIn {
     from { opacity: 0; transform: translateY(-5px); }
     to { opacity: 1; transform: translateY(0); }
 }
+
+
+/* ==========================================================================
+   SEÇÃO 8 — DIVISÓRIAS PRINCIPAIS (Concluídas e Pendentes)
+   ==========================================================================
+   O que faz: as duas caixas grandes que guardam as listas. Uma variante é
+   verde (Concluídas) e a outra amarela (Pendentes).
+   Vocabulário: 'divisória principal' = essas duas caixas. 'Seção' = as
+   subdivisórias criadas pelo usuário dentro delas (Seção 9).
+   ========================================================================== */
 
 .divisoria {
     background: var(--card-bg);
@@ -321,6 +490,7 @@ header p {
     overflow: hidden;
 }
 
+/* [DIVISÓRIA] Faixa de título de cada caixa (ex.: nome + contador). */
 .divisoria-header {
     padding: 15px 20px;
     font-size: 16px;
@@ -331,6 +501,8 @@ header p {
     border-bottom: 1px solid var(--border-color);
 }
 
+/* [ESTADO] Variante VERDE: borda esquerda e cabeçalho da caixa
+   Concluídas. */
 .divisoria-concluidas {
     border-left: 5px solid var(--success-border);
 }
@@ -339,6 +511,8 @@ header p {
     color: var(--success-text);
 }
 
+/* [ESTADO] Variante AMARELA: borda esquerda e cabeçalho da caixa
+   Pendentes. */
 .divisoria-pendentes {
     border-left: 5px solid var(--pending-border);
 }
@@ -347,6 +521,7 @@ header p {
     color: var(--pending-text);
 }
 
+/* [DIVISÓRIA] A lista (ul) onde o JS insere as tarefas e as seções. */
 .lista-tarefas {
     padding: 10px 20px;
     list-style: none;
@@ -355,7 +530,19 @@ header p {
     position: relative;
 }
 
+
+/* ==========================================================================
+   SEÇÃO 9 — SEÇÕES DENTRO DA LISTA (subdivisórias)
+   ==========================================================================
+   O que faz: as barras de título que o usuário cria com o botão Nova
+   Divisória, com a alça para arrastar, o título editável e o botão de
+   apagar. As classes começam com 'secao-'.
+   Inclui os estilos de [ARRASTAR] (dragging e placeholder-secao).
+   ========================================================================== */
+
 /* --- HEADER E HANDLE DA DIVISÓRIA --- */
+/* [SEÇÃO] Linha que junta [alça de arrastar] + [barra de título da
+   seção]. [TRANSIÇÃO] no fundo e na sombra. */
 .secao-header-wrapper {
     display: flex;
     align-items: center;
@@ -365,10 +552,13 @@ header p {
     transition: background 0.2s, box-shadow 0.2s;
 }
 
+/* [SEÇÃO] A primeira da lista fica com menos margem no topo. */
 .secao-header-wrapper:first-child {
     margin-top: 5px;
 }
 
+/* [ARRASTAR] Alça para arrastar a seção. cursor: grab mostra a mão
+   aberta. */
 .drag-handle-secao {
     background: #161b22;
     border: 1px solid var(--secao-border);
@@ -387,6 +577,7 @@ header p {
     box-shadow: 0 2px 4px rgba(0,0,0,0.3);
 }
 
+/* [HOVER] Alça com o mouse por cima (aumenta um pouco: scale). */
 .drag-handle-secao:hover {
     background: #21262d;
     border-color: var(--primary);
@@ -394,12 +585,15 @@ header p {
     transform: scale(1.05);
 }
 
+/* [ATIVO] Enquanto o botão do mouse está apertado (cursor: grabbing =
+   mão fechada). */
 .drag-handle-secao:active {
     cursor: grabbing;
     background: var(--primary);
     color: #ffffff;
 }
 
+/* [SEÇÃO] A barra com o título da seção (fundo cinza, borda tracejada). */
 .secao-header-item {
     flex: 1;
     background: var(--secao-bg);
@@ -417,6 +611,9 @@ header p {
     letter-spacing: 0.5px;
 }
 
+/* [ESTADO] Variante VERDE da barra, usada dentro da lista Concluídas.
+   [AVISO] precisa ficar DEPOIS de .secao-header-item: as duas classes
+   têm o mesmo peso e, no empate, vence a que aparece por último. */
 .secao-header-concluida {
     background: rgba(46, 160, 67, 0.1);
     border: 1px dashed var(--success-border);
@@ -424,6 +621,8 @@ header p {
     margin: 15px 0 8px 0;
 }
 
+/* [ARRASTAR] Seção sendo arrastada: sombra e leve transparência.
+   pointer-events: none deixa o mouse 'atravessar' o item. */
 .secao-header-wrapper.dragging {
     background: var(--card-bg);
     border-radius: 8px;
@@ -432,6 +631,8 @@ header p {
     pointer-events: none;
 }
 
+/* [ARRASTAR] Espaço tracejado que mostra onde a seção vai cair quando
+   soltar. */
 .secao-header-wrapper.placeholder-secao {
     background: rgba(56, 139, 253, 0.08);
     border: 1px dashed var(--primary);
@@ -440,6 +641,7 @@ header p {
     margin: 18px 0 8px 0;
 }
 
+/* [SEÇÃO] Texto do título da seção (editável). */
 .secao-titulo {
     outline: none;
     border: 1px solid transparent;
@@ -447,11 +649,13 @@ header p {
     border-radius: 4px;
 }
 
+/* [FOCO] Título da seção sendo editado. */
 .secao-titulo:focus {
     border-color: var(--primary);
     background: #0d1117;
 }
 
+/* [SEÇÃO] Botão de apagar a seção (discreto, sem fundo). */
 .btn-apagar-secao {
     background: transparent;
     border: none;
@@ -462,11 +666,24 @@ header p {
     border-radius: 4px;
 }
 
+/* [HOVER] Botão de apagar seção fica vermelho. */
 .btn-apagar-secao:hover {
     color: var(--danger);
 }
 
+
+/* ==========================================================================
+   SEÇÃO 10 — TAREFAS (cada item da lista)
+   ==========================================================================
+   O que faz: a linha de cada tarefa: alça de arrastar, checkbox, título,
+   observação, número e botão de apagar. Também a mensagem de lista vazia
+   (.vazio).
+   Inclui os estilos de [ARRASTAR] (dragging e placeholder) e o [ESTADO] de
+   tarefa concluída.
+   ========================================================================== */
+
 /* --- TAREFAS --- */
+/* [TAREFA] Cada linha de tarefa. [TRANSIÇÃO] no fundo e na sombra. */
 .tarefa-item {
     display: flex;
     align-items: center;
@@ -481,11 +698,13 @@ header p {
     transition: background 0.2s, box-shadow 0.2s;
 }
 
+/* [TAREFA] A última tarefa da lista fica sem borda embaixo e sem margem. */
 .tarefa-item:last-child {
     border-bottom: none;
     margin-bottom: 0;
 }
 
+/* [ARRASTAR] Alça para arrastar a tarefa. */
 .drag-handle {
     color: var(--text-muted);
     font-size: 16px;
@@ -495,10 +714,12 @@ header p {
     touch-action: none; 
 }
 
+/* [ATIVO] Alça com o mouse apertado (mão fechada). */
 .drag-handle:active {
     cursor: grabbing;
 }
 
+/* [ARRASTAR] Tarefa sendo arrastada: borda azul e sombra forte. */
 .tarefa-item.dragging {
     background: var(--card-bg);
     border: 1px solid var(--primary);
@@ -507,6 +728,7 @@ header p {
     pointer-events: none;
 }
 
+/* [ARRASTAR] Espaço tracejado que mostra onde a tarefa vai cair. */
 .tarefa-item.placeholder {
     background: rgba(56, 139, 253, 0.05);
     border: 1px dashed var(--primary);
@@ -514,6 +736,7 @@ header p {
     margin-bottom: 5px;
 }
 
+/* [TAREFA] Bloco da esquerda: checkbox + textos. */
 .tarefa-info {
     display: flex;
     align-items: flex-start;
@@ -521,6 +744,8 @@ header p {
     flex: 1;
 }
 
+/* [TAREFA] Checkbox de concluir. accent-color pinta com a cor de
+   destaque. */
 .tarefa-info input[type="checkbox"] {
     margin-top: 4px;
     width: 18px;
@@ -529,6 +754,8 @@ header p {
     accent-color: var(--primary);
 }
 
+/* [TAREFA] Coluna com título e observação empilhados (flex-direction:
+   column). */
 .tarefa-detalhes {
     display: flex;
     flex-direction: column;
@@ -536,6 +763,7 @@ header p {
     flex: 1;
 }
 
+/* [TAREFA] Título da tarefa (editável). [TRANSIÇÃO] na borda e no fundo. */
 .tarefa-titulo {
     font-weight: 600;
     font-size: 14px;
@@ -547,11 +775,13 @@ header p {
     transition: border-color 0.2s, background 0.2s;
 }
 
+/* [FOCO] Título da tarefa sendo editado. */
 .tarefa-titulo:focus {
     border-color: var(--primary);
     background: #0d1117;
 }
 
+/* [TAREFA] Observação da tarefa: texto menor e cinza (editável). */
 .tarefa-obs {
     font-size: 12px;
     color: var(--text-muted);
@@ -562,11 +792,13 @@ header p {
     transition: border-color 0.2s, background 0.2s;
 }
 
+/* [FOCO] Observação sendo editada. */
 .tarefa-obs:focus {
     border-color: var(--primary);
     background: #0d1117;
 }
 
+/* [TAREFA] Etiqueta pequena (badge) com número, nas cores de 'pendente'. */
 .badge-numero {
     background: var(--pending-bg);
     color: var(--pending-text);
@@ -581,17 +813,21 @@ header p {
     text-align: center;
 }
 
+/* [ESTADO] Tarefa concluída: título riscado e cinza (o JS coloca a
+   classe). */
 .concluida-texto .tarefa-titulo {
     text-decoration: line-through;
     color: var(--text-muted);
 }
 
+/* [TAREFA] Área da direita com os botões de ação. */
 .acoes-item {
     display: flex;
     gap: 8px;
     align-items: center;
 }
 
+/* [BOTÃO] Botão de apagar tarefa. [TRANSIÇÃO] em todas as propriedades. */
 .btn-apagar {
     background-color: transparent;
     color: var(--text-muted);
@@ -604,12 +840,14 @@ header p {
     white-space: nowrap;
 }
 
+/* [HOVER] Botão de apagar tarefa: fundo e borda vermelhos. */
 .btn-apagar:hover {
     background-color: var(--danger);
     color: white;
     border-color: var(--danger);
 }
 
+/* [TAREFA] Mensagem exibida quando uma lista está vazia. */
 .vazio {
     padding: 15px;
     text-align: center;
